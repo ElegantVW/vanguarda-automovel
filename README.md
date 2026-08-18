@@ -1,6 +1,6 @@
 # Vanguarda Automóvel
 
-Repositório operacional da **VANGUARDA AUTOMÓVEL - UNIPESSOAL LDA**.
+Repositório operacional da **VANGUARDA AUTOMÓVEL, UNIPESSOAL LDA** (NIPC 515461385).
 
 Serviço premium de pintura e restauro de interiores automóveis em Portugal (tecidos, vinil, plásticos e pele), com aerógrafo profissional e sistema Stardust Artistic Pro (WPU). Pintar em vez de substituir.
 
@@ -23,14 +23,17 @@ cd vanguarda-automovel
 
 | Pasta | O que é |
 |---|---|
+| [docs/legal/](docs/legal/) | Extrato da certidão permanente (sem dump integral) |
 | [docs/transcricao/](docs/transcricao/) | Histórico consolidado e tabela de conflitos das conversas antigas |
 | [docs/plano/](docs/plano/) | Plano mestre das fases 1–6 |
 | [docs/checklists/](docs/checklists/) | Checklist acionável por fase |
 
 ## Decisões fechadas
 
-- Firma oficial: **VANGUARDA AUTOMÓVEL - UNIPESSOAL LDA** (alteração permanente).
-- Sede registada: Rua Padre António Vieira, n.º 7, 4A, 2660-231 Santo António dos Cavaleiros (Loures).
+- Firma oficial: **VANGUARDA AUTOMÓVEL, UNIPESSOAL LDA** (Insc. 2, 27/07/2026).
+- Sede registada: Rua Padre António Vieira nº 7, 4A, 2660-231 Santo António dos Cavaleiros (Loures — freguesia Santo António dos Cavaleiros e Frielas).
+- CAE principal (R4): reparação e manutenção de veículos automóveis. Objeto de interiores / oficina / unidade móvel **registado**.
+- Ficha legal: [docs/legal/registo-comercial.md](docs/legal/registo-comercial.md).
 - Tintas oficiais: **Stardust Artistic Pro Series (WPU)**. SEM fica só como referência histórica.
 - Marketing: **100 % orgânico**. Zero anúncios pagos.
 

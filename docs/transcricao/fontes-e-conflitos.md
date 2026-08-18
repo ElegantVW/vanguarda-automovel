@@ -3,13 +3,13 @@
 Documento de auditoria. Explica de onde veio cada facto da [transcrição consolidada](transcricao-consolidada.md) e o que foi rejeitado.
 
 Última atualização: 18 de agosto de 2026.  
-Revisão de estado legal: nome e sede confirmados pela equipa (alteração permanente / sede registada).
+Revisão de estado legal: certidão permanente (Insc. 2, 27/07/2026) — ver [registo-comercial.md](../legal/registo-comercial.md).
 
 ## Regra de verdade
 
 1. Transcript específico de uma fase ganha a um resumo genérico.
 2. Decisão mais recente ganha a uma hipótese mais antiga.
-3. Confirmação da equipa (este repo) ganha a qualquer transcript.
+3. Certidão permanente / confirmação da equipa ganha a qualquer transcript.
 4. SEM Sure-Coat / Color Coat e anúncios pagos estão **descartados** como operação. Ficam só no histórico.
 
 ## Fontes primárias (Drive — Elegant Vanguard / Transcripts)
@@ -48,8 +48,7 @@ Usadas para cruzar preços, cronograma e existência de minutas. Não copiar par
 
 | Data | Confirmação | Efeito |
 |---|---|---|
-| 2026-08-18 | Firma alterada de forma permanente para VANGUARDA AUTOMÓVEL - UNIPESSOAL LDA | Fase 1: alteração de firma **fechada** |
-| 2026-08-18 | Sede legalmente registada | Fase 1: alteração de sede **fechada** |
+| 2026-08-18 | Certidão permanente: firma VANGUARDA AUTOMÓVEL, UNIPESSOAL LDA; sede SAC; objeto e CAE R4 registados (Insc. 2, 27/07/2026) | Fase 1 conservatória **fechada** |
 | 2026-08-18 | Tintas oficiais = Stardust WPU | SEM fora da operação |
 | 2026-08-18 | Marketing 100 % orgânico | Ads fora da operação |
 
@@ -62,15 +61,15 @@ Usadas para cruzar preços, cronograma e existência de minutas. Não copiar par
 | Kit Fase 3 | Pack Iwata + RM 3700 a 327 €, “pronto a encomendar” | Iwata recebido; Sparmax TC-620X 388,90 € encomendado | Transcript da Fase 3 é mais específico e posterior |
 | Formação | “Inscritos / em preparação / aguardar datas” | IDDA Online comprado e concluído, 299 € | Transcript de Formações atualizado |
 | Fardamento | “Pronto a encomendar / briefing enviado” | Já encomendado; faltam quantidades e valores finais | Transcript de Fardamento |
-| Firma | RUELAS & MEMÓRIAS ainda como firma oficial; ata “pronta” | VANGUARDA AUTOMÓVEL - UNIPESSOAL LDA, alteração permanente | Confirmação da equipa, 18/08/2026 |
-| Sede | Morada nova “prevista”, por registar | Sede registada na morada de SAC / Loures | Confirmação da equipa, 18/08/2026 |
+| Firma | RUELAS & MEMÓRIAS ainda como firma oficial; ata “pronta” | VANGUARDA AUTOMÓVEL, UNIPESSOAL LDA | Insc. 2, 27/07/2026 |
+| Sede | Morada nova “prevista”, por registar | Rua Padre António Vieira nº 7, 4A, 2660-231 SAC (freguesia SAC e Frielas) | Insc. 2 |
+| Objeto / CAE | “Confirmar no certificado” | Objeto da ata registado; CAE principal R4 reparação e manutenção + 9 secundários | Certidão lida 18/08/2026 |
 | Nº de fases | Alguns resumos param na Fase 5 | Seis fases | Transcript completo + pedido da equipa |
 
 ## Ainda em aberto (não inventar)
 
-- CAE 45.20 como principal: previsto na ata; **confirmar no certificado permanente** se já ficou registado com a alteração da firma/sede.
-- Objeto social: texto final existe na ata; **confirmar se o conservatória registou essa redação**.
-- Titular da marca INPI ainda pode constar como RUELAS & MEMÓRIAS (pedido feito antes do registo da nova firma).
+- Códigos numéricos CAE R4 (a certidão só traz descrições).
+- Titular da marca INPI ainda pode constar como RUELAS & MEMÓRIAS (pedido feito antes da Insc. 2).
 - Chegada efetiva do Sparmax, cabine VEVOR e encomenda Stardust (estados de maio 2026).
 - Valores e quantidades finais do fardamento.
 - Segunda viatura demo (106 vs Clio / Corsa / Golf).

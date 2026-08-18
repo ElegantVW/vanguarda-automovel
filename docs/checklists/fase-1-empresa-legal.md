@@ -2,39 +2,40 @@
 
 **Dono:** Gerente, com o contabilista.  
 **Pré-requisitos:** nenhum.  
-**Fecha quando:** certificado permanente confere firma + sede + objeto + CAE; INPI com titular novo; resíduos tratados; NDAs assinados ou recusados por escrito.  
+**Fecha quando:** INPI com titular novo; resíduos tratados por escrito; NDAs assinados ou recusados por escrito. Firma, sede, objeto e CAE já estão na certidão.  
 **Ligações:** desbloqueia o NDA do investidor (dinheiro) e a credibilidade da Fase 5.
 
 ## Já feito
 
 - [x] Certificado de admissibilidade de firma deferido
-- [x] Firma alterada de forma **permanente** para **VANGUARDA AUTOMÓVEL - UNIPESSOAL LDA**
-- [x] Sede **registada**: Rua Padre António Vieira, n.º 7, 4A, 2660-231 Santo António dos Cavaleiros (Loures)
-- [x] NIPC 515461385 e capital 1.500,00 € mantidos
-- [x] Texto da deliberação do sócio único redigido (ata)
+- [x] Firma alterada: **VANGUARDA AUTOMÓVEL, UNIPESSOAL LDA** (Insc. 2, 27/07/2026, art. 1.º n.º 1 e 2.º n.º 1)
+- [x] Sede **registada**: Rua Padre António Vieira nº 7, 4A, 2660-231 Santo António dos Cavaleiros (Loures — freguesia Santo António dos Cavaleiros e Frielas)
+- [x] Objeto social da ata **registado na íntegra** (interiores, oficina, detailing, unidade móvel + secundários TVDE / animação / estafetas)
+- [x] CAE principal (R4): reparação e manutenção de veículos automóveis
+- [x] CAE secundários 1–9 listados na [ficha de registo](../legal/registo-comercial.md) (inclui retalho e grosso de peças)
+- [x] NIPC 515461385, capital 1.500,00 €, gerência de Rodrigo Mendes Sousa, 1 gerente obriga
+- [x] Certidão permanente lida (válida até 26/07/2027)
 - [x] Pedido de marca INPI submetido (classes 35 + 37, 186,40 €)
 - [x] Minutas NDA investidor e NDA geral existentes no OneDrive
 
-## Certidão e objeto
+## Certidão e arquivo
 
-- [ ] Pedir certificado permanente atualizado
-- [ ] Confirmar no certificado a firma VANGUARDA AUTOMÓVEL - UNIPESSOAL LDA
-- [ ] Confirmar no certificado a sede de Santo António dos Cavaleiros
-- [ ] Confirmar se o objeto social registado é o texto longo da ata (oficina + interiores + unidade móvel + secundários TVDE)
-- [ ] Se o objeto estiver incompleto, mandatar o gerente / contabilista para retificar
-- [ ] Arquivar o certificado no OneDrive da empresa (não neste git)
+- [x] Firma, sede, objeto e CAE conferidos na certidão
+- [ ] Arquivar o PDF / print da certidão no OneDrive da empresa (não neste git)
+- [ ] Renovar a certidão permanente **antes de 26/07/2027**
+- [ ] Próxima prestação de contas: requerente com a **firma nova** (o depósito de 2025 ainda saiu como RUELAS & MEMORIAS)
 
-## CAE e atividade
+## CAE e atividade (pós-registo)
 
-- [ ] Confirmar CAE principal **45.20** no certificado / portal das Finanças
-- [ ] Se 45.20 ainda não for principal, pedir ao contabilista a alteração
-- [ ] Confirmar se é preciso CAE secundário específico de restauro / estofos
-- [ ] Atualizar atividade nas Finanças se o contabilista o exigir
+- [x] Principal alinhado com oficina / reparação (o «45.20» das conversas)
+- [ ] Pedir ao contabilista os **códigos numéricos** R4 (a certidão só traz descrições)
+- [ ] Confirmar se Finanças / IES já espelham o mesmo CAE principal
+- [ ] Decidir se retalho/grosso de peças (secundários 1 e 2) vai ser usado de facto ou fica só no registo
 
 ## Marca INPI
 
 - [ ] Verificar estado do pedido «VANGUARDA AUTOMÓVEL»
-- [ ] Atualizar o **titular** de RUELAS & MEMÓRIAS para VANGUARDA AUTOMÓVEL - UNIPESSOAL LDA (a sede antiga foi a usada no pedido)
+- [ ] Atualizar o **titular** de RUELAS & MEMÓRIAS para VANGUARDA AUTOMÓVEL, UNIPESSOAL LDA (pedido feito com a firma e sede antigas)
 - [ ] Atualizar a morada do titular para a sede registada
 - [ ] Guardar o comprovativo do pedido e, quando sair, o certificado de registo (OneDrive)
 - [ ] Não avançar Madrid / EUIPO nesta fase
@@ -55,10 +56,10 @@
 
 ## Fiscal (perguntar, não executar às cegas)
 
-- [ ] Enviar ao contabilista um pedido único: CAE, objeto, sede já registada, planeamento IRC 15 %, elegibilidade SIFIDE, elegibilidade RFAI, Estatuto de Startup (Lei 21/2023)
+- [ ] Enviar ao contabilista um pedido único: certidão já lida (firma, sede, objeto, CAE R4), códigos numéricos, planeamento IRC 15 %, elegibilidade SIFIDE, elegibilidade RFAI, Estatuto de Startup (Lei 21/2023)
 - [ ] Agendar resposta escrita do contabilista
 - [ ] Só depois abrir processos SIFIDE / RFAI / Startup
 
 ## Critério de fecho
 
-Fase 1 fecha quando o Gerente consegue mostrar à equipa: certificado permanente alinhado, print ou certificado INPI com o titular novo, e pasta legal no OneDrive com NDAs (assinados ou com recusa datada).
+A parte de conservatória está fechada. A fase fecha quando existir titular INPI atualizado, nota SILiAmb (feito ou não aplicável) e NDAs assinados ou recusados por escrito.

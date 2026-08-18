@@ -9,7 +9,7 @@ Auditoria: [fontes e conflitos](../transcricao/fontes-e-conflitos.md).
 
 | Papel | Pessoa prevista nas conversas | Neste plano |
 |---|---|---|
-| Gerente | Rodrigo Mendes | Firma, contabilista, investidor, preços finais, parcerias pesadas |
+| Gerente | Rodrigo Mendes Sousa | Firma, contabilista, investidor, preços finais, parcerias pesadas |
 | Oficina | O mesmo, no prático | Equipamento, aplicação, demos, qualidade |
 | Atendimento | Segunda pessoa da formação / fardamento | Agenda, clientes, indicações, apoio prático seg–qua |
 | Design | Fora das conversas originais; identidade no Drive | Conteúdos, templates, consistência da marca |
@@ -22,8 +22,9 @@ Quem entra agora e não é o mecânico lê as checklists do seu papel. Não é p
 
 | Decisão | Valor |
 |---|---|
-| Firma | VANGUARDA AUTOMÓVEL - UNIPESSOAL LDA — alteração **permanente** |
-| Sede | Rua Padre António Vieira, 7, 4A, 2660-231 Santo António dos Cavaleiros — **registada** |
+| Firma | VANGUARDA AUTOMÓVEL, UNIPESSOAL LDA — Insc. 2, 27/07/2026 |
+| Sede | Rua Padre António Vieira nº 7, 4A, 2660-231 Santo António dos Cavaleiros e Frielas — **registada** |
+| Objeto / CAE | Objeto de interiores + oficina registado; CAE principal R4 reparação e manutenção |
 | NIPC / capital | 515461385 / 1.500 € |
 | Tintas | Stardust Artistic Pro (WPU). SEM só histórico |
 | Marketing | Orgânico. Zero ads |
@@ -53,7 +54,7 @@ As fases **não** são estritamente sequenciais. 1, 3 e 4 já começaram. 6 pode
 
 | Fase | Dono principal | Critério de «fechada» |
 |---|---|---|
-| 1 | Gerente + contabilista | Certificado permanente confere firma, sede, objeto e CAE; titular INPI atualizado; SILiAmb feito ou recusado por escrito; NDAs assinados ou recusados por escrito |
+| 1 | Gerente + contabilista | Conservatória fechada. Falta INPI (titular), SILiAmb, NDAs |
 | 2 | Oficina + Atendimento | Prática mínima documentada (peças de teste) depois do IDDA; gaps listados |
 | 3 | Oficina | Compressor, tintas e cabine em casa **ou** justificação; receitas Stardust afixadas; primeiro teste fotografado |
 | 4 | Gerente | Dois kits recebidos, provados, valores arquivados |
@@ -74,7 +75,7 @@ As fases **não** são estritamente sequenciais. 1, 3 e 4 já começaram. 6 pode
 
 O Word `Cronograma de Arranque 10S.docx` serve só de esqueleto de calendário. Ajustes obrigatórios quando alguém o usar:
 
-- Semana 1: firma e sede **já não são tarefas**. Ficam CAE/objeto no certificado, INPI titular, SILiAmb, NDA.
+- Semana 1: firma, sede, objeto e CAE **já não são tarefas**. Ficam INPI titular, SILiAmb, NDA.
 - Semanas 2 e 4: não «encomendar SEM» nem «pintar com SEM». É Stardust WPU.
 - Semana 2: IDDA já está concluído — passa a prática, não a inscrição.
 - Semana 3: fardamento já foi encomendado — passa a receção e prova.
@@ -104,8 +105,8 @@ Orçamento de lançamento falado nos resumos: ~2.800–2.900 €, ou 2.100 € n
 
 Semana A
 
-1. Gerente: pedir certificado permanente e confirmar CAE + objeto (Fase 1).
-2. Gerente: atualizar titular da marca no INPI para a nova firma.
+1. Gerente: arquivar o PDF da certidão no OneDrive; pedir ao contabilista os códigos CAE R4.
+2. Gerente: atualizar titular da marca no INPI para VANGUARDA AUTOMÓVEL, UNIPESSOAL LDA.
 3. Gerente: assinar NDA com o investidor (minuta OneDrive).
 4. Oficina: inventário físico — Iwata, Sparmax, Stardust, cabine. Atualizar a [Fase 3](../checklists/fase-3-equipamento-tintas.md).
 

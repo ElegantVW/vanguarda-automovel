@@ -2,7 +2,7 @@
 
 Histórico único das conversas de lançamento (abril–agosto 2026), reescrito para a equipa. Não é um dump de chat.
 
-- Participantes originais: Rodrigo Mendes (gerente / oficina) e assistente Grok.
+- Participantes originais: Rodrigo Mendes Sousa (gerente / oficina) e assistente Grok.
 - Este documento destina-se a qualquer membro do projeto, incluindo quem não esteve nessas conversas.
 - Fontes, duplicados e conflitos: [fontes-e-conflitos.md](fontes-e-conflitos.md).
 - Plano de execução: [plano-mestre.md](../plano/plano-mestre.md).
@@ -13,20 +13,24 @@ A Vanguarda Automóvel pinta e restaura interiores automóveis (tejadilho, plás
 
 Empresa-base: microempresa de 2019, antes em transportes/TVDE/animação, sem faturação recente no novo ramo. Objetivo da transformação: nova firma, novo objeto, nova sede, CAE de oficina, e manter benefícios de PME / empresa com menos de 10 anos.
 
-**Estado legal confirmado em agosto de 2026**
+**Estado legal (certidão permanente, Insc. 2 de 27/07/2026)** — ficha: [registo-comercial.md](../legal/registo-comercial.md)
 
 | Campo | Valor |
 |---|---|
-| Firma | VANGUARDA AUTOMÓVEL - UNIPESSOAL LDA (alteração permanente) |
+| Firma | VANGUARDA AUTOMÓVEL, UNIPESSOAL LDA |
 | NIPC | 515461385 |
-| Natureza | Sociedade unipessoal por quotas |
-| Capital | 1.500,00 € |
-| Sede | Rua Padre António Vieira, n.º 7, 4A, 2660-231 Santo António dos Cavaleiros (Loures) — **registada** |
-| Sede antiga | Rua 28 de Maio, n.º 5 - R/C, 2675-464 Odivelas |
+| Natureza | Sociedade por quotas (unipessoal) |
+| Capital | 1.500,00 € (quota única, Rodrigo Mendes Sousa) |
+| Sede | Rua Padre António Vieira nº 7, 4A, 2660-231 Santo António dos Cavaleiros |
+| Freguesia | Santo António dos Cavaleiros e Frielas (concelho Loures, distrito Lisboa) |
+| Sede antiga | Rua 28 de Maio, n.º 5 - R/C, 2675-464 Odivelas (Insc. 1, 26/04/2019) |
+| CAE principal (R4) | Reparação e manutenção de veículos automóveis |
+| Gerência | Rodrigo Mendes Sousa; 1 gerente obriga |
+| Certidão | Válida até 26/07/2027 |
 
-Objeto social preparado na deliberação do sócio único (confirmar se o conservatória registou esta redação na íntegra):
+Objeto social **registado** (texto da Insc. 2):
 
-> Prestação de serviços de manutenção, reparação, pintura, tratamento de superfícies, restauro e rejuvenescimento profissional de interiores, estofos, plásticos, componentes e partes de veículos automóveis, incluindo oficina de reparação, mecânica ligeira, detailing (limpeza profunda, polimento, proteção cerâmica e estética) e unidade móvel, com técnicas inovadoras, sustentáveis e de economia circular (pintura em vez de substituição). Atividades secundárias: transporte ocasional / TVDE, animação turística, estafetas e apoio às empresas do objeto anterior.
+> A sociedade tem por objeto principal a prestação de serviços de manutenção, reparação, pintura, tratamento de superfícies, restauro e rejuvenescimento profissional de interiores, estofos, plásticos, componentes e partes de veículos automóveis, incluindo serviços de oficina de reparação automóvel, mecânica automóvel ligeira, serviços de detailing automóvel (limpeza profunda, polimento, proteção cerâmica e estética automóvel) e prestação de serviços com unidade móvel (deslocação ao domicílio ou local do cliente), com recurso a técnicas inovadoras, sustentáveis e de economia circular (pintura em vez de substituição). Como atividades secundárias, a sociedade pode ainda exercer: transporte ocasional de passageiros em veículos ligeiros, transporte não regular de passageiros (TVDE), organização de atividades turísticas, recreativas e de animação, serviços de estafetas e entregas ao domicílio, e outras atividades de apoio prestado às empresas constantes do objeto social anterior.
 
 Investidor / futuro parceiro: 3.000 € confirmados. Reembolso falado: 50 €/mês nos primeiros 3 meses, depois 100 €/mês. Alocação falada: 2.100 € custos iniciais + 300 € buffer pessoal + 600 € reserva.
 
@@ -38,8 +42,8 @@ Localização de trabalho: Loures e arredores; espaço partilhado com dois parce
 
 **Decisões**
 
-- Nova firma e nova sede — **já executadas** (confirmação da equipa, 18/08/2026).
-- CAE principal previsto: 45.20 (manutenção e reparação de veículos). Confirmar no certificado permanente se já ficou como principal.
+- Nova firma e nova sede — **registadas** (Insc. 2, 27/07/2026; publicação 28/07/2026, Conservatória de Loures).
+- CAE principal **confirmado** na certidão (R4): reparação e manutenção de veículos automóveis. Nove CAE secundários, incluindo retalho e grosso de peças.
 - Marca «VANGUARDA AUTOMÓVEL» no INPI, classes 35 (publicidade / gestão) + 37 (manutenção e reparação). Pedido submetido. Custo 186,40 €. Titular no pedido: ainda RUELAS & MEMÓRIAS, porque a alteração da firma ainda não estava registada nessa data — atualizar titular agora.
 - Termos da classe 37 escolhidos: manutenção e reparação de veículos, pintura, polimento, limpeza profunda, estofamento e reparação de estofos, empreiteiro de pintura, personalização de veículos.
 - Registo como produtor de resíduos (SILiAmb) previsto, não confirmado como feito.
@@ -48,7 +52,7 @@ Localização de trabalho: Loures e arredores; espaço partilhado com dois parce
 - Proteção internacional (Madrid / EUIPO) falada como passo futuro, não imediato.
 - Certificado de admissibilidade de firma: deferido (antes da alteração).
 
-**Em aberto na Fase 1:** CAE e objeto no certificado permanente; atualização do titular INPI; SILiAmb; NDAs assinados; conversa formal com o contabilista sobre SIFIDE / RFAI / Startup.
+**Em aberto na Fase 1:** atualização do titular INPI; SILiAmb; NDAs assinados; códigos numéricos R4 e conversa formal com o contabilista sobre SIFIDE / RFAI / Startup. Firma, sede, objeto e CAE já não estão em aberto.
 
 ## 3. Fase 2 — Formações
 
@@ -199,7 +203,7 @@ Por fazer de facto: resto da Fase 1 (CAE/objeto no certificado, INPI titular, SI
 
 Próximos passos que as conversas já apontavam, agora em linguagem de equipa:
 
-1. Fechar o que falta na Fase 1 e assinar o NDA do investidor.
+1. Fechar o que falta na Fase 1 (INPI, SILiAmb, NDA). Conservatória já está feita.
 2. Confirmar chegada de compressor, tintas e cabine; fazer os primeiros testes Stardust.
 3. Confirmar fardamento (valores e prova).
 4. Preparar o espaço / armazém.
