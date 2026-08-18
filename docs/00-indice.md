@@ -5,15 +5,16 @@ Ordem de leitura para quem entra agora (incluindo quem **não** esteve nas conve
 1. [README](../README.md) — o que é este repo e o que nunca lá meter.
 2. [Registo comercial](legal/registo-comercial.md) — extrato da certidão permanente.
 3. [Plano mestre](plano/plano-mestre.md) — fases 1–6, papéis, próximos 30 dias.
-4. Checklist da fase em que estás:
+4. [Correio](operacao/email.md) — Purelymail em vanguardaautomovel.com (MX; o .com fica no Google).
+5. Checklist da fase em que estás:
    - [Fase 1 — Empresa e proteção legal](checklists/fase-1-empresa-legal.md)
    - [Fase 2 — Formações](checklists/fase-2-formacoes.md)
    - [Fase 3 — Equipamento e tintas](checklists/fase-3-equipamento-tintas.md)
    - [Fase 4 — Fardamento](checklists/fase-4-fardamento.md)
    - [Fase 5 — Demonstração e marketing](checklists/fase-5-demo-marketing.md)
    - [Fase 6 — Preços, espaço e operação](checklists/fase-6-precos-espaco-operacao.md)
-5. [Transcrição consolidada](transcricao/transcricao-consolidada.md) — histórico por fase.
-6. [Fontes e conflitos](transcricao/fontes-e-conflitos.md) — de onde veio cada facto e o que foi descartado.
+6. [Transcrição consolidada](transcricao/transcricao-consolidada.md) — histórico por fase.
+7. [Fontes e conflitos](transcricao/fontes-e-conflitos.md) — de onde veio cada facto e o que foi descartado.
 
 ## Estado legal (certidão permanente, lida 18/08/2026)
 
@@ -28,6 +29,7 @@ Ordem de leitura para quem entra agora (incluindo quem **não** esteve nas conve
 | Capital | 1.500,00 € | Inalterado |
 | Gerente | Rodrigo Mendes Sousa (1 gerente obriga) | Inalterado |
 | Certidão | Válida até 26/07/2027 | Ativa |
+| Marca INPI | Titular Vanguarda Automóvel Unipessoal LDA | Confirmado pela equipa |
 
 ## Ligações externas (não estão no git)
 

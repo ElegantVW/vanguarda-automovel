@@ -54,7 +54,7 @@ As fases **não** são estritamente sequenciais. 1, 3 e 4 já começaram. 6 pode
 
 | Fase | Dono principal | Critério de «fechada» |
 |---|---|---|
-| 1 | Gerente + contabilista | Conservatória fechada. Falta INPI (titular), SILiAmb, NDAs |
+| 1 | Gerente + contabilista | Conservatória e INPI fechados. Falta SILiAmb, NDAs |
 | 2 | Oficina + Atendimento | Prática mínima documentada (peças de teste) depois do IDDA; gaps listados |
 | 3 | Oficina | Compressor, tintas e cabine em casa **ou** justificação; receitas Stardust afixadas; primeiro teste fotografado |
 | 4 | Gerente | Dois kits recebidos, provados, valores arquivados |
@@ -75,7 +75,7 @@ As fases **não** são estritamente sequenciais. 1, 3 e 4 já começaram. 6 pode
 
 O Word `Cronograma de Arranque 10S.docx` serve só de esqueleto de calendário. Ajustes obrigatórios quando alguém o usar:
 
-- Semana 1: firma, sede, objeto e CAE **já não são tarefas**. Ficam INPI titular, SILiAmb, NDA.
+- Semana 1: firma, sede, objeto, CAE e titular INPI **já não são tarefas**. Ficam SILiAmb, NDA.
 - Semanas 2 e 4: não «encomendar SEM» nem «pintar com SEM». É Stardust WPU.
 - Semana 2: IDDA já está concluído — passa a prática, não a inscrição.
 - Semana 3: fardamento já foi encomendado — passa a receção e prova.
@@ -106,7 +106,7 @@ Orçamento de lançamento falado nos resumos: ~2.800–2.900 €, ou 2.100 € n
 Semana A
 
 1. Gerente: arquivar o PDF da certidão no OneDrive; pedir ao contabilista os códigos CAE R4.
-2. Gerente: atualizar titular da marca no INPI para VANGUARDA AUTOMÓVEL, UNIPESSOAL LDA.
+2. Gerente: titular INPI já é Vanguarda Automóvel Unipessoal LDA — só confirmar morada e arquivar o certificado.
 3. Gerente: assinar NDA com o investidor (minuta OneDrive).
 4. Oficina: inventário físico — Iwata, Sparmax, Stardust, cabine. Atualizar a [Fase 3](../checklists/fase-3-equipamento-tintas.md).
 

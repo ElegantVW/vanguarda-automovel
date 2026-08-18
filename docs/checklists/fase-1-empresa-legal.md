@@ -2,7 +2,7 @@
 
 **Dono:** Gerente, com o contabilista.  
 **Pré-requisitos:** nenhum.  
-**Fecha quando:** INPI com titular novo; resíduos tratados por escrito; NDAs assinados ou recusados por escrito. Firma, sede, objeto e CAE já estão na certidão.  
+**Fecha quando:** resíduos tratados por escrito; NDAs assinados ou recusados por escrito. Firma, sede, objeto, CAE e titular INPI já estão fechados.  
 **Ligações:** desbloqueia o NDA do investidor (dinheiro) e a credibilidade da Fase 5.
 
 ## Já feito
@@ -16,6 +16,7 @@
 - [x] NIPC 515461385, capital 1.500,00 €, gerência de Rodrigo Mendes Sousa, 1 gerente obriga
 - [x] Certidão permanente lida (válida até 26/07/2027)
 - [x] Pedido de marca INPI submetido (classes 35 + 37, 186,40 €)
+- [x] Titular INPI: **Vanguarda Automóvel Unipessoal LDA** (já não é Ruelas & Memórias)
 - [x] Minutas NDA investidor e NDA geral existentes no OneDrive
 
 ## Certidão e arquivo
@@ -23,7 +24,8 @@
 - [x] Firma, sede, objeto e CAE conferidos na certidão
 - [ ] Arquivar o PDF / print da certidão no OneDrive da empresa (não neste git)
 - [ ] Renovar a certidão permanente **antes de 26/07/2027**
-- [ ] Próxima prestação de contas: requerente com a **firma nova** (o depósito de 2025 ainda saiu como RUELAS & MEMORIAS)
+- [x] Contas 2025 depositadas como RUELAS & MEMORIAS — **correto** (exercício anterior à Insc. 2)
+- [ ] Contas **2026**: requerente VANGUARDA AUTOMÓVEL, UNIPESSOAL LDA
 
 ## CAE e atividade (pós-registo)
 
@@ -34,10 +36,10 @@
 
 ## Marca INPI
 
-- [ ] Verificar estado do pedido «VANGUARDA AUTOMÓVEL»
-- [ ] Atualizar o **titular** de RUELAS & MEMÓRIAS para VANGUARDA AUTOMÓVEL, UNIPESSOAL LDA (pedido feito com a firma e sede antigas)
-- [ ] Atualizar a morada do titular para a sede registada
-- [ ] Guardar o comprovativo do pedido e, quando sair, o certificado de registo (OneDrive)
+- [x] Titular atual: Vanguarda Automóvel Unipessoal LDA
+- [ ] Verificar estado do pedido / certificado «VANGUARDA AUTOMÓVEL» (classes 35 + 37)
+- [ ] Confirmar que a morada do titular no INPI é a sede de SAC
+- [ ] Guardar o comprovativo / certificado no OneDrive
 - [ ] Não avançar Madrid / EUIPO nesta fase
 
 ## Resíduos e oficina
@@ -62,4 +64,4 @@
 
 ## Critério de fecho
 
-A parte de conservatória está fechada. A fase fecha quando existir titular INPI atualizado, nota SILiAmb (feito ou não aplicável) e NDAs assinados ou recusados por escrito.
+Conservatória e titular INPI estão fechados. A fase fecha com nota SILiAmb (feito ou não aplicável) e NDAs assinados ou recusados por escrito.

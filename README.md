@@ -24,6 +24,7 @@ cd vanguarda-automovel
 | Pasta | O que é |
 |---|---|
 | [docs/legal/](docs/legal/) | Extrato da certidão permanente (sem dump integral) |
+| [docs/operacao/](docs/operacao/) | Correio (Purelymail + árvore de endereços) |
 | [docs/transcricao/](docs/transcricao/) | Histórico consolidado e tabela de conflitos das conversas antigas |
 | [docs/plano/](docs/plano/) | Plano mestre das fases 1–6 |
 | [docs/checklists/](docs/checklists/) | Checklist acionável por fase |

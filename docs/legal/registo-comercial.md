@@ -57,10 +57,12 @@ O transcript antigo falava só em «45.20». O principal registado corresponde a
 
 ## Contas
 
-Prestações de contas individuais depositadas para 2019 a 2025. A última (exercício 2025, DEP 3389/2026-07-14) ainda figura o requerente **RUELAS & MEMORIAS - UNIPESSOAL LDA** — normal: é anterior ou contemporânea da Insc. 2. Próximo depósito deve usar a firma nova.
+Prestações de contas individuais depositadas para 2019 a 2025. O exercício **2025** (DEP 3389/2026-07-14) figura corretamente o requerente **RUELAS & MEMORIAS - UNIPESSOAL LDA**: a Insc. 2 da nova firma é de 27/07/2026, depois do fecho desse exercício. O depósito de **2026** é que deve usar VANGUARDA AUTOMÓVEL, UNIPESSOAL LDA.
 
 ## O que isto fecha / o que não fecha
 
 Fecha: firma, sede (incluindo freguesia), objeto, CAE principal e secundários, gerência, capital, forma de obrigar.
 
-Não fecha: titular da marca INPI, SILiAmb, NDAs, conversa fiscal (SIFIDE / RFAI / Startup).
+Fecha também (confirmação da equipa, 18/08/2026): titular da marca INPI = Vanguarda Automóvel Unipessoal LDA.
+
+Não fecha: SILiAmb, NDAs, conversa fiscal (SIFIDE / RFAI / Startup).

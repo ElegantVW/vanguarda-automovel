@@ -44,7 +44,7 @@ Localização de trabalho: Loures e arredores; espaço partilhado com dois parce
 
 - Nova firma e nova sede — **registadas** (Insc. 2, 27/07/2026; publicação 28/07/2026, Conservatória de Loures).
 - CAE principal **confirmado** na certidão (R4): reparação e manutenção de veículos automóveis. Nove CAE secundários, incluindo retalho e grosso de peças.
-- Marca «VANGUARDA AUTOMÓVEL» no INPI, classes 35 (publicidade / gestão) + 37 (manutenção e reparação). Pedido submetido. Custo 186,40 €. Titular no pedido: ainda RUELAS & MEMÓRIAS, porque a alteração da firma ainda não estava registada nessa data — atualizar titular agora.
+- Marca «VANGUARDA AUTOMÓVEL» no INPI, classes 35 + 37, 186,40 €. Titular **atual: Vanguarda Automóvel Unipessoal LDA** (já não é Ruelas & Memórias).
 - Termos da classe 37 escolhidos: manutenção e reparação de veículos, pintura, polimento, limpeza profunda, estofamento e reparação de estofos, empreiteiro de pintura, personalização de veículos.
 - Registo como produtor de resíduos (SILiAmb) previsto, não confirmado como feito.
 - Dois NDAs redigidos: investidor / parceiro (não concorrência 2 anos, sanção mínima 5.000 €) e geral para stands, colaboradores e fornecedores (sanção 3.000 €). Minutas no OneDrive. Assinatura em falta.
@@ -52,7 +52,7 @@ Localização de trabalho: Loures e arredores; espaço partilhado com dois parce
 - Proteção internacional (Madrid / EUIPO) falada como passo futuro, não imediato.
 - Certificado de admissibilidade de firma: deferido (antes da alteração).
 
-**Em aberto na Fase 1:** atualização do titular INPI; SILiAmb; NDAs assinados; códigos numéricos R4 e conversa formal com o contabilista sobre SIFIDE / RFAI / Startup. Firma, sede, objeto e CAE já não estão em aberto.
+**Em aberto na Fase 1:** SILiAmb; NDAs; códigos numéricos R4; conversa fiscal (SIFIDE / RFAI / Startup). Firma, sede, objeto, CAE e titular INPI estão fechados.
 
 ## 3. Fase 2 — Formações
 
@@ -199,11 +199,11 @@ Plano de identidade em Elegant Vanguard / Working (inglês, designer «The Bird 
 
 Fechado ou muito avançado: firma, sede, formação IDDA, aerógrafo recebido, encomendas Sparmax / Stardust / cabine / fardamento, redes em suspense, NDAs redigidos, investidor verbalmente confirmado, identidade visual em curso.
 
-Por fazer de facto: resto da Fase 1 (CAE/objeto no certificado, INPI titular, SILiAmb, NDAs assinados), receção e testes da Fase 3, valores do fardamento, as duas demos, conteúdo publicado, lista de preços única, espaço operacional.
+Por fazer de facto: resto da Fase 1 (SILiAmb, NDAs), receção e testes da Fase 3, valores do fardamento, as duas demos, conteúdo publicado, lista de preços única, espaço operacional.
 
 Próximos passos que as conversas já apontavam, agora em linguagem de equipa:
 
-1. Fechar o que falta na Fase 1 (INPI, SILiAmb, NDA). Conservatória já está feita.
+1. Fechar o que falta na Fase 1 (SILiAmb, NDA). Conservatória e INPI já estão feitos.
 2. Confirmar chegada de compressor, tintas e cabine; fazer os primeiros testes Stardust.
 3. Confirmar fardamento (valores e prova).
 4. Preparar o espaço / armazém.

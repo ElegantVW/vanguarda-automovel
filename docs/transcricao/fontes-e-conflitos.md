@@ -51,6 +51,8 @@ Usadas para cruzar preços, cronograma e existência de minutas. Não copiar par
 | 2026-08-18 | Certidão permanente: firma VANGUARDA AUTOMÓVEL, UNIPESSOAL LDA; sede SAC; objeto e CAE R4 registados (Insc. 2, 27/07/2026) | Fase 1 conservatória **fechada** |
 | 2026-08-18 | Tintas oficiais = Stardust WPU | SEM fora da operação |
 | 2026-08-18 | Marketing 100 % orgânico | Ads fora da operação |
+| 2026-08-18 | Titular INPI = Vanguarda Automóvel Unipessoal LDA | Marca alinhada com a firma |
+| 2026-08-18 | Contas 2025 como RUELAS & MEMORIAS estão corretas | Só 2026 muda o requerente |
 
 ## Tabela de conflitos (resolvidos)
 
@@ -69,7 +71,6 @@ Usadas para cruzar preços, cronograma e existência de minutas. Não copiar par
 ## Ainda em aberto (não inventar)
 
 - Códigos numéricos CAE R4 (a certidão só traz descrições).
-- Titular da marca INPI ainda pode constar como RUELAS & MEMÓRIAS (pedido feito antes da Insc. 2).
 - Chegada efetiva do Sparmax, cabine VEVOR e encomenda Stardust (estados de maio 2026).
 - Valores e quantidades finais do fardamento.
 - Segunda viatura demo (106 vs Clio / Corsa / Golf).
