@@ -1,0 +1,48 @@
+# Sistema
+Thumbs.db
+Desktop.ini
+.DS_Store
+ehthumbs.db
+
+# Editores
+.vscode/
+.idea/
+*.swp
+*~
+
+# Segredos e credenciais — nunca commitar
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+emails.txt
+*senha*
+*password*
+*secret*
+
+# Dados pessoais e fiscais
+*NIF*
+*IBAN*
+*Finanças*
+*Segurança Social*
+
+# OneDrive / Office temporários
+~$*
+*.tmp
+*.bak
+
+# Binários pesados (média fica no Drive)
+*.mp4
+*.mov
+*.avi
+*.psd
+*.ai
+*.zip
+*.rar
+*.7z
+
+# Python / Node acidentais
+__pycache__/
+node_modules/
+.venv/
