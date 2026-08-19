@@ -30,6 +30,14 @@ goblin peek
 
 Use a real User (`designer@vanguardaautomovel.com` or `ceo@…`), not an Identidade.
 
+## Status 19 Aug 2026 (this session)
+
+- Clone: `C:\Users\ruela\Projects\goblin` → `origin` `https://github.com/ElegantVW/goblin.git` (`c0a5450`)
+- rustup + rustc 1.97.1 + cargo **installed**
+- `cargo test` **failed**: no `link.exe` (need Visual Studio Build Tools / C++ workload)
+- `gh auth login` **not done** — push will fail until you log in
+- `goblin who`: no accounts yet — you must `goblin summon --preset purelymail` and type the mailbox password
+
 ## GitHub (both machines, same account)
 
 Windows today: `gh` installed, **not logged in**; no `~/.ssh`; no global git name/email.
