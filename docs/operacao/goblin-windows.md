@@ -1,7 +1,8 @@
 # Goblin on this Windows client
 
-Installed: `C:\Users\ruela\AppData\Local\Programs\Goblin\`  
-(`goblin.exe` + `goblin-gui.exe`, 19 Aug 2026)
+**Removed from this Windows PC on 19 Aug 2026** (Inno uninstaller + `Projects\goblin` clone).  
+Mail server is **goblind on Linux**; Windows GUI work continues in another session.  
+Do not reinstall the client here unless that session says so.
 
 Mail **MX is still Purelymail**. Do not flip Squarespace to goblind until `goblin steal` works against the Linux server.
 
