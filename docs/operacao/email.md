@@ -3,6 +3,8 @@
 Sistema escolhido: **Purelymail** no domínio existente **vanguardaautomovel.com**.  
 O Google (ou o registador atual) **mantém a propriedade do nome**. Só o correio (registos MX / SPF / DKIM / DMARC) muda para a Purelymail.
 
+**goblind** (daemon de correio no Linux) ainda **não** é o MX. Ver [goblin-windows.md](goblin-windows.md). Não apontar o Squarespace para `mail.vanguardaautomovel.com` até o steal no Linux estar provado.
+
 Custo: ~10 USD / ano (~0,80 €/mês). Não se paga por endereço.  
 Marketing continua orgânico: a Purelymail **não** serve para newsletters.
 

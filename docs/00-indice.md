@@ -6,7 +6,15 @@ Ordem de leitura para quem entra agora (incluindo quem **não** esteve nas conve
 2. [Registo comercial](legal/registo-comercial.md) — extrato da certidão permanente.
 3. [Plano mestre](plano/plano-mestre.md) — fases 1–6, papéis, próximos 30 dias.
 4. [Correio](operacao/email.md) — Purelymail em vanguardaautomovel.com (MX; o .com fica no Squarespace).
-4b. [Goblin neste Windows](operacao/goblin-windows.md) — cliente instalado; MX ainda Purelymail.
+4b. [Goblin / goblind](operacao/goblin-windows.md) — **goblind** é o daemon no Linux; o cliente Windows está desinstalado; MX ainda Purelymail.
+4c. App — `tools/ficha-cliente` + `tools/diagnostico`. Dados em `Documents\Vanguarda\Dados\Clientes` (não OneDrive). Manuais:
+    - [Utilizador](software/manual-utilizador.md)
+    - [Design / admin](software/manual-design.md)
+    - [PII](software/dados-e-pii.md)
+    - [Compilar](software/compilar.md)
+    - [Diagnóstico vLinker](software/diagnostico.md)
+    - [Preços internos](software/precos-internos.md)
+4d. [Academia](educacao.md) — curso único da casa (`Documents\Vanguarda\Educacao`). Design (Inkscape) é a faculdade 01.
 5. Checklist da fase em que estás:
    - [Fase 1 — Empresa e proteção legal](checklists/fase-1-empresa-legal.md)
    - [Fase 2 — Formações](checklists/fase-2-formacoes.md)

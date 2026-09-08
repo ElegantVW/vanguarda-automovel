@@ -1,0 +1,60 @@
+[package]
+name = "ficha-cliente"
+version = "0.1.0"
+edition = "2021"
+description = "Vanguarda — Front/Back, Relatório (visita), Trabalho, Care, stock"
+
+[lib]
+name = "ficha_cliente"
+path = "src/lib.rs"
+
+[[bin]]
+name = "FichaCliente"
+path = "src/main.rs"
+
+[[bin]]
+name = "vanguarda_setup"
+path = "src/bin/setup.rs"
+
+[[bin]]
+name = "orcamento_n1"
+path = "src/bin/orcamento_n1.rs"
+
+[dependencies]
+anyhow = "1"
+ab_glyph = "0.2"
+aes-gcm = "0.10"
+chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
+rand = "0.8"
+docx-rs = "0.4"
+lopdf = "0.34"
+pdf-extract = "0.7"
+eframe = "0.31"
+image = { version = "0.24", default-features = false, features = ["png", "jpeg"] }
+printpdf = { version = "0.7", features = ["embedded_images"] }
+rfd = "0.15"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sha2 = "0.10"
+argon2 = { version = "0.5", features = ["std"] }
+walkdir = "2"
+winreg = "0.52"
+zip = { version = "2", default-features = false, features = ["deflate"] }
+vanguarda-diagnostico = { path = "../diagnostico" }
+rusqlite = { version = "0.32", features = ["bundled"] }
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.59", features = [
+    "Win32_Foundation",
+    "Win32_System_Console",
+    "Win32_System_Com",
+] }
+windows = { version = "0.58", features = [
+    "Data_Pdf",
+    "Foundation",
+    "Globalization",
+    "Graphics_Imaging",
+    "Media_Ocr",
+    "Storage",
+    "Storage_Streams",
+] }

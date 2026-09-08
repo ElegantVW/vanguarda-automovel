@@ -1,0 +1,17 @@
+(WARN) [11:57:29.089] Verificando FTDI #1:D3C662V2...
+(OK) [11:57:29.457] Ligação ao adaptador foi establecida: FTDI #1:D3C662V2
+(OK) [11:57:29.457] Adaptador:  vLinker FS v2.3.04 MIC3322 V2.3.04 (ELM327 v2.3)
+(OK) [11:57:29.540] Ligação ao veículo foi establecida
+(OK) [11:57:29.720] Veículo: Ford Focus Duratorq Turbo Diesel Common Rail Injection Stage VI 1.5L 2015 ( 2015.25MY ), VIN: WF0ZZZ0G0FGB63208
+(OK) [11:57:41.743] Módulo encontrado:  OBD2_PCM - On Board Diagnostic II (PCM)
+(WARN) [11:57:41.823] DTCs dentro OBD2_PCM: P2598-C
+(OK) [11:57:41.969] Módulo encontrado:  PCM - Módulo de Controlo do Motor
+(WARN) [11:57:47.284] DTCs dentro PCM: P2463:00-EC, P0833:35-6C, P068A:13-68, P2563:72-6C, P2598:00-EC
+(OK) [11:57:50.405] Módulo encontrado:  ABS - Sistema de travões anti-bloqueio
+(WARN) [11:57:51.103] DTCs dentro ABS: U0401:00-28
+(OK) [11:57:51.998] Módulo encontrado:  RCM - Módulo de controlo do sistema suplementar de segurança
+(WARN) [11:57:54.423] DTCs dentro RCM: U0253:00-2F
+(OK) [11:57:57.061] Módulo encontrado:  BCMii - Módulo electrónico de funções da carroçaria
+(WARN) [11:57:58.874] DTCs dentro BCMii: B1182:00-AF, B124D:02-AF
+(OK) [11:58:12.123] Módulo encontrado:  IPC - Grupo de instrumentos no painel de instrumentos
+(WARN) [11:58:13.144] DTCs dentro IPC: U0184:00-2F

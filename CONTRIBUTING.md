@@ -21,7 +21,9 @@ Assina as alterações com o teu papel no commit (`docs: fase 3 — compressor r
 3. Abre um pull request (ou pede revisão) antes de fundir em `main` se a alteração muda uma decisão fechada.
 4. Atualiza o estado da checklist (`[ ]` → `[x]`) no mesmo PR.
 
-Se o GitHub ainda não estiver ligado nesta máquina, trabalha no `main` local e não partilhes pastas OneDrive do repo.
+Remote: [ElegantVW/vanguarda-automovel](https://github.com/ElegantVW/vanguarda-automovel). Sítio unificado no disco: `Documents\Vanguarda\Software`.
+
+Alterações em `tools/`: `cargo test --lib` em `tools/ficha-cliente` (e `cargo test` em `tools/diagnostico` se o crate mudou) antes de fundir.
 
 ## O que não entra aqui
 

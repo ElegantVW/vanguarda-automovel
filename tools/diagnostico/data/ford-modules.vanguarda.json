@@ -1,0 +1,11 @@
+{
+  "comment": "Mapa da Vanguarda. Cresce com scans nossos. IDs ISO-TP públicos + Focus 1.5 TDCI da casa.",
+  "modules": [
+    {"id": "OBD", "name": "OBD-II funcional", "bus": "hs", "req": "7DF", "rsp": "7E8"},
+    {"id": "PCM", "name": "Módulo de Controlo do Motor", "bus": "hs", "req": "7E0", "rsp": "7E8"},
+    {"id": "ABS", "name": "Sistema de travões anti-bloqueio", "bus": "hs", "req": "760", "rsp": "768"},
+    {"id": "RCM", "name": "Airbag", "bus": "hs", "req": "737", "rsp": "73F"},
+    {"id": "IPC", "name": "Painel de instrumentos", "bus": "ms", "req": "720", "rsp": "728"},
+    {"id": "BCM", "name": "Carroçaria", "bus": "ms", "req": "726", "rsp": "72E"}
+  ]
+}

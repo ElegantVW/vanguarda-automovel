@@ -28,6 +28,19 @@ Não reabrir a inscrição. O que falta é mão.
 - [ ] Uma amostra de tejadilho (se houver retalho) com a diluição 1 : 1,1–1,2 da Fase 3
 - [ ] Fotografar o resultado e apontar o que falhou (cor, textura, pele de laranja, aderência)
 
+## Academia Vanguarda (casa)
+
+Curso interno em `Documents\Vanguarda\Educacao`. Não substitui o IDDA de interiores; cobre Design, electrónica, mecânica, software, diagnóstico próprio, finanças, RH, e computadores/faeOS.
+
+- [x] Faculdade **01 Design** — Inkscape módulos 1–20 no sítio (`Educacao\01-Design`)
+- [ ] Abrir `Educacao\00-CAMPUS.txt` e o trilho da mesa
+- [ ] Oficinas: 02 Electrónica → 03 Mecânica → 09 Diagnóstico (protocolos públicos, sem copiar Autocom)
+- [ ] Design: continuar 01 + produção (módulo 19)
+- [ ] Escritório: 10 Finanças + 11 RH
+- [ ] Gerente / faeOS: 12 Computadores (montar máquina, OS, [ElegantVW](https://github.com/ElegantVW))
+
+Índice git: [docs/educacao.md](../educacao.md).
+
 ## Gaps e formação extra
 
 - [ ] Listar o que o IDDA não cobriu para o método Stardust + Iwata

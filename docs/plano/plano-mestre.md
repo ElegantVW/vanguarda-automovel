@@ -65,11 +65,17 @@ As fases **não** são estritamente sequenciais. 1, 3 e 4 já começaram. 6 pode
 
 | Coisa | Sítio |
 |---|---|
-| Este plano, transcrição, checklists | Este repositório git |
-| Transcripts originais, logos, vídeos | Google Drive → Elegant Vanguard |
+| Casa da Vanguarda | `C:\Users\ruela\Documents\Vanguarda` (local, não OneDrive) |
+| Este plano, transcrição, checklists | Este repositório git (`Software\`) |
+| Academia / cursos | `Educacao\` — [docs/educacao.md](../educacao.md) |
+| Fichas e PII | `Dados\Clientes\` — **nunca git, nunca OneDrive** |
+| Ícones / fundos | `Design\` |
+| Documento Geral, logótipos | `Empresa\` |
+| Transcripts originais, logos extra, vídeos | Google Drive → Elegant Vanguard |
 | Pasta vazia para PDF futuros | [Working / Plano Mestre 2026](https://drive.google.com/drive/folders/1NnEsJ9HivsgfxgCKOwIHks3zMxQ8Gs9x) |
 | Plano de negócios Word, NDAs, pacto, atas | OneDrive da empresa |
 | Arquivo TVDE antigo, senhas, fiscal | OneDrive `Documentos Empresa` — **nunca no git** |
+| faeOS / bulwark / goblin / fairy-lantern | GitHub `ElegantVW` — faculdade 12 da Academia |
 
 ## 5. Relação com o cronograma de 10 semanas
 
@@ -130,7 +136,15 @@ Semana C–D
 - Identidade visual e operação estão em pastas diferentes (Drive Working vs este git). O Design lê o plano de identidade; a Oficina lê as checklists.
 - Quem clonar este repo num portátil **não** leva senhas nem o arquivo fiscal — e é assim que tem de ser.
 
-## 9. Checklists
+## 9. Software da casa (pista paralela)
+
+As fases 1–6 são o lançamento físico. O programa em `tools/ficha-cliente` é o sítio onde a equipa corre o dia. Não espera pelo armazém.
+
+Manuais: [docs/software/](../software/manual-utilizador.md). Diagnóstico próprio: [vLinker](../software/diagnostico.md), crate `tools/diagnostico`. Preços na app: [precos-internos.md](../software/precos-internos.md) até a Fase 6 fechar uma lista.
+
+TVDE, faturação AT e NDAs **não** entram na app.
+
+## 10. Checklists
 
 - [Fase 1 — Empresa e proteção legal](../checklists/fase-1-empresa-legal.md)
 - [Fase 2 — Formações](../checklists/fase-2-formacoes.md)

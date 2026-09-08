@@ -1,0 +1,11 @@
+A casa da Vanguarda é:
+
+  C:\Users\ruela\Documents\Vanguarda\
+
+O clone de trabalho é Documents\Vanguarda\Software (este repositório).
+Educacao, Dados, Design, Empresa, App estão na casa, não neste git.
+
+Dados\Clientes (PII, vault, ops.sqlite) nunca entra no git.
+App\Vanguarda.exe é o único exe da secretária (não está no git).
+
+Não apagar AppData\Local\Vanguarda\Clientes até confirmares que a app abre fichas a partir de Dados\.

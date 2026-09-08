@@ -42,7 +42,16 @@ emails.txt
 *.rar
 *.7z
 
-# Python / Node acidentais
+# Python / Node / Rust acidentais
 __pycache__/
 node_modules/
 .venv/
+target/
+
+# Fichas geradas (PII fica em Documents\Vanguarda\Dados, não no git)
+ficha.json
+staff.json
+consumo.json
+Dados/
+Clientes/
+*.exe
