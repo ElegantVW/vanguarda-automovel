@@ -343,6 +343,7 @@ fn spec_diag(scan: &Scan, cliente: &str, stars: &[SistemaNota]) -> Spec {
 fn pdf_gold() -> printpdf::Color {
     printpdf::Color::Rgb(Rgb::new(0.831, 0.690, 0.416, None))
 }
+#[allow(dead_code)]
 fn pdf_gold_dim() -> printpdf::Color {
     printpdf::Color::Rgb(Rgb::new(0.72, 0.58, 0.32, None))
 }
@@ -496,14 +497,15 @@ fn is_gold_pixel(r: u8, g: u8, b: u8) -> bool {
     r >= 140 && g >= 90 && b <= 190 && r >= g && (r as i16 - b as i16) >= 40
 }
 
-/// Keep gold line-art, force the galvanized tile to pure black.
-fn gold_art_on_black(img: ::image::RgbImage) -> ::image::RgbImage {
+/// Keep gold line-art, punch the dark plate to alpha so it sits on the velvet.
+fn gold_art_transparent(img: ::image::RgbaImage) -> ::image::RgbaImage {
     let mut out = img;
     for p in out.pixels_mut() {
         if is_gold_pixel(p.0[0], p.0[1], p.0[2]) {
+            p.0[3] = 255;
             continue;
         }
-        p.0 = [0, 0, 0];
+        p.0[3] = 0;
     }
     out
 }
@@ -616,38 +618,14 @@ fn load_icon_on_page(
     let stem = media::icon_stem(heading)?;
     let path = media::find_icon(stem)?;
     let dynimg = ::image::open(&path).ok()?;
-    if path
-        .extension()
-        .and_then(|e| e.to_str())
-        .map(|e| e.eq_ignore_ascii_case("png"))
-        .unwrap_or(false)
-        || media::is_design_icon(&path)
-    {
-        let rgba = dynimg.to_rgba8();
-        let (w, h) = ::image::GenericImageView::dimensions(&rgba);
-        let w_mm = if h > 0 {
-            h_mm * (w as f32 / h as f32)
-        } else {
-            h_mm
-        };
-        return flatten_rgba_on_page(&rgba, bg, x_mm, y_top_mm, w_mm, h_mm);
-    }
-    let img = gold_art_on_black(dynimg.to_rgb8());
-    let (w, h) = ::image::GenericImageView::dimensions(&img);
-    let max = 192u32;
-    let rgb = if w.max(h) > max {
-        let s = max as f32 / w.max(h) as f32;
-        let nw = ((w as f32) * s).max(1.0) as u32;
-        let nh = ((h as f32) * s).max(1.0) as u32;
-        ::image::imageops::resize(&img, nw, nh, ::image::imageops::FilterType::Triangle)
+    let rgba = gold_art_transparent(dynimg.to_rgba8());
+    let (w, h) = ::image::GenericImageView::dimensions(&rgba);
+    let w_mm = if h > 0 {
+        h_mm * (w as f32 / h as f32)
     } else {
-        img
+        h_mm
     };
-    let mut jpeg = Vec::new();
-    ::image::DynamicImage::ImageRgb8(rgb)
-        .write_to(&mut Cursor::new(&mut jpeg), ::image::ImageOutputFormat::Jpeg(90))
-        .ok()?;
-    Some(jpeg)
+    flatten_rgba_on_page(&rgba, bg, x_mm, y_top_mm, w_mm, h_mm)
 }
 
 fn rounded_card_points(x0: f32, y0: f32, x1: f32, y1: f32, r: f32) -> Vec<(Point, bool)> {
@@ -689,6 +667,7 @@ fn pdf_body_ink() -> printpdf::Color {
     }
 }
 
+#[allow(dead_code)]
 fn pdf_body_ink_dim() -> printpdf::Color {
     if house_style().ink_black() {
         printpdf::Color::Rgb(Rgb::new(0.28, 0.26, 0.24, None))
@@ -785,33 +764,52 @@ fn body_cols() -> usize {
     chars_for_width_mm(w, body_pt())
 }
 
+fn body_h_mm(size_pt: f32) -> f32 {
+    (size_pt * 0.42).clamp(3.4, 8.0)
+}
+
 fn paint_line(
     doc: &PdfDocumentReference,
     page: PdfPageIndex,
     layer: PdfLayerIndex,
-    font: &IndirectFontRef,
+    _font: &IndirectFontRef,
+    bg: &Option<Vec<u8>>,
     x: f32,
     y: f32,
     text: &str,
     size: f32,
     dim: bool,
 ) {
-    if text.is_empty() {
+    if text.trim().is_empty() {
         return;
     }
-    let current = doc.get_page(page).get_layer(layer);
-    current.set_fill_color(if dim {
-        pdf_body_ink_dim()
+    let h_mm = body_h_mm(size);
+    let px = (h_mm * 12.0).clamp(28.0, 96.0);
+    let Ok((rgba, w, h)) = fonts::raster_body_rgba(text, px, !dim) else {
+        return;
+    };
+    let w_mm = if h > 0 {
+        h_mm * (w as f32 / h as f32)
     } else {
-        pdf_body_ink()
-    });
-    current.use_text(&pdf_safe(text), size, Mm(x), Mm(y), font);
+        h_mm * 4.0
+    };
+    let y_top = y + h_mm * 0.58;
+    if let Some(jpeg) = flatten_rgba_on_page_max(&rgba, bg, x, y_top, w_mm, h_mm, 1400) {
+        place_jpeg(doc, page, layer, &jpeg, x, y_top, h_mm);
+    }
 }
 
-fn helvetica_width_mm(text: &str, size_pt: f32) -> f32 {
-    let t = pdf_safe(text);
-    let char_mm = (size_pt * 0.50 * 0.3528).max(1.05);
-    t.chars().count() as f32 * char_mm
+fn body_width_mm(text: &str, size_pt: f32) -> f32 {
+    let h_mm = body_h_mm(size_pt);
+    let px = (h_mm * 12.0).clamp(28.0, 96.0);
+    let Ok((_, w, h)) = fonts::raster_body_rgba(text, px, true) else {
+        return text.chars().count() as f32 * (size_pt * 0.50 * 0.3528).max(1.05);
+    };
+    if h > 0 {
+        h_mm * (w as f32 / h as f32)
+    } else {
+        h_mm * 4.0
+    }
 }
 
 fn paint_right(
@@ -819,14 +817,62 @@ fn paint_right(
     page: PdfPageIndex,
     layer: PdfLayerIndex,
     font: &IndirectFontRef,
+    bg: &Option<Vec<u8>>,
     x_right: f32,
     y: f32,
     text: &str,
     size: f32,
     dim: bool,
 ) {
-    let w = helvetica_width_mm(text, size);
-    paint_line(doc, page, layer, font, x_right - w, y, text, size, dim);
+    let w = body_width_mm(text, size);
+    paint_line(doc, page, layer, font, bg, x_right - w, y, text, size, dim);
+}
+
+fn draw_gold_star(
+    doc: &PdfDocumentReference,
+    page: PdfPageIndex,
+    layer: PdfLayerIndex,
+    cx: f32,
+    cy: f32,
+    r: f32,
+    on: bool,
+) {
+    let mut pts = Vec::new();
+    for i in 0..10 {
+        let a = std::f32::consts::PI / 2.0 + i as f32 * std::f32::consts::PI / 5.0;
+        let rad = if i % 2 == 0 { r } else { r * 0.42 };
+        pts.push((
+            Point::new(Mm(cx + rad * a.cos()), Mm(cy + rad * a.sin())),
+            false,
+        ));
+    }
+    let current = doc.get_page(page).get_layer(layer);
+    current.set_outline_color(pdf_body_ink());
+    current.set_fill_color(pdf_body_ink());
+    current.set_outline_thickness(0.28);
+    current.add_polygon(Polygon {
+        rings: vec![pts],
+        mode: if on {
+            PaintMode::FillStroke
+        } else {
+            PaintMode::Stroke
+        },
+        winding_order: WindingOrder::NonZero,
+    });
+}
+
+fn draw_star_meter(
+    doc: &PdfDocumentReference,
+    page: PdfPageIndex,
+    layer: PdfLayerIndex,
+    x: f32,
+    cy: f32,
+    n: u8,
+) {
+    let n = n.min(5);
+    for i in 0..5 {
+        draw_gold_star(doc, page, layer, x + i as f32 * 4.1, cy, 1.55, (i as u8) < n);
+    }
 }
 
 fn turn_page(
@@ -913,17 +959,7 @@ fn draw_card(
                     ICON_MM,
                 );
             }
-            paint_line(
-                doc,
-                *page,
-                *layer,
-                font,
-                text_x,
-                cy,
-                heading,
-                body_pt() + 1.0,
-                false,
-            );
+            place_cinzel(doc, *page, *layer, bg, heading, text_x, *y - CARD_PAD, 6.0);
             if let Some(extra) = aside {
                 if !extra.trim().is_empty() {
                     paint_line(
@@ -931,6 +967,7 @@ fn draw_card(
                         *page,
                         *layer,
                         font,
+                        bg,
                         148.0,
                         cy,
                         extra,
@@ -947,6 +984,7 @@ fn draw_card(
                 *page,
                 *layer,
                 font,
+                bg,
                 text_x + line.indent,
                 cy,
                 &line.text,
@@ -1092,7 +1130,7 @@ fn draw_header_card(
     let title_h = (st.titulo_pt.max(14.0) * 0.45).clamp(8.0, 16.0);
     let mut body: Vec<InkLine> = Vec::new();
     if !subtitle.trim().is_empty() {
-        body.push(InkLine::gold(pdf_safe(subtitle), 12.0, 0.0, 5.5));
+        body.push(InkLine::gold(subtitle, 12.0, 0.0, 5.5));
     }
     body.extend(extra.iter().cloned());
     let body_h: f32 = body.iter().map(|l| l.gap).sum();
@@ -1146,7 +1184,7 @@ fn draw_header_card(
         *page,
         *layer,
         bg,
-        "VANGUARDA AUTOMOVEL",
+        "VANGUARDA AUTOMÓVEL",
         text_x,
         cy,
         mark_h,
@@ -1158,25 +1196,26 @@ fn draw_header_card(
             *page,
             *layer,
             font,
+            bg,
             text_x,
             cy - 4.0,
-            "VANGUARDA AUTOMOVEL",
+            "VANGUARDA AUTOMÓVEL",
             11.0,
             false,
         );
     }
     cy -= mark_h + 1.5 + extra_mm * 0.35;
     if !title.trim().is_empty() {
-        let t = pdf_safe(title);
-        if !place_title_raster(doc, *page, *layer, bg, &t, text_x, cy, title_h, gold, on_white) {
+        if !place_title_raster(doc, *page, *layer, bg, title, text_x, cy, title_h, gold, on_white) {
             paint_line(
                 doc,
                 *page,
                 *layer,
                 font,
+                bg,
                 text_x,
                 cy - 5.0,
-                &t,
+                title,
                 st.titulo_pt.max(12.0),
                 false,
             );
@@ -1189,6 +1228,7 @@ fn draw_header_card(
             *page,
             *layer,
             font,
+            bg,
             text_x,
             cy,
             &line.text,
@@ -1301,11 +1341,11 @@ fn write_diag_pdf(
     let pairs = [
         ("Cliente", cliente),
         ("Data", scan.data.as_str()),
-        ("Matricula", scan.matricula.as_str()),
+        ("Matrícula", scan.matricula.as_str()),
         ("VIN", scan.vin.as_str()),
-        ("Veiculo", scan.veiculo.as_str()),
+        ("Veículo", scan.veiculo.as_str()),
         ("Km", scan.km.as_str()),
-        ("Mecanico", scan.mecanico.as_str()),
+        ("Mecânico", scan.mecanico.as_str()),
     ];
     let mut id_lines = Vec::new();
     for (k, v) in pairs {
@@ -1345,26 +1385,59 @@ fn write_diag_pdf(
 
     let rated: Vec<&SistemaNota> = stars.iter().filter(|s| s.estrelas > 0).collect();
     if !rated.is_empty() {
-        let mut lines = vec![InkLine::dim("5 em ordem, 1 grave", 9.0, 0.0, 5.5)];
-        for s in rated {
-            lines.push(InkLine::gold(
-                format!("{}  {}", s.categoria, star_bar(s.estrelas)),
-                10.0,
-                0.0,
-                5.5,
-            ));
+        let row_h = 6.4_f32;
+        let head = 14.0_f32;
+        let h = CARD_PAD + head + 7.0 + rated.len() as f32 * row_h + CARD_PAD;
+        if y - h < PAGE_BOT {
+            turn_page(&doc, &bg, &mut page, &mut layer, &mut y);
         }
-        draw_card(
+        gold_card(&doc, page, layer, CARD_X0, y - h, CARD_X1, y);
+        let inner_x = CARD_X0 + CARD_PAD;
+        if let Some(jpeg) = load_icon_on_page("Estado da viatura", &bg, inner_x, y - CARD_PAD, ICON_MM)
+        {
+            place_jpeg(&doc, page, layer, &jpeg, inner_x, y - CARD_PAD, ICON_MM);
+        }
+        place_cinzel(
             &doc,
-            &mut page,
-            &mut layer,
-            &mut y,
-            &font,
+            page,
+            layer,
             &bg,
             "Estado da viatura",
-            None,
-            &lines,
+            inner_x + ICON_MM + 2.5,
+            y - CARD_PAD,
+            6.0,
         );
+        let mut cy = y - CARD_PAD - head;
+        paint_line(
+            &doc,
+            page,
+            layer,
+            &font,
+            &bg,
+            inner_x,
+            cy,
+            "5 em ordem, 1 grave",
+            9.0,
+            true,
+        );
+        cy -= 6.0;
+        for s in &rated {
+            paint_line(
+                &doc,
+                page,
+                layer,
+                &font,
+                &bg,
+                inner_x,
+                cy,
+                &s.categoria,
+                10.0,
+                false,
+            );
+            draw_star_meter(&doc, page, layer, CARD_X1 - CARD_PAD - 22.0, cy + 1.2, s.estrelas);
+            cy -= row_h;
+        }
+        y -= h + CARD_GAP;
     }
 
     if scan.dtcs.is_empty() {
@@ -1381,10 +1454,7 @@ fn write_diag_pdf(
         );
     } else {
         for (cat, items) in grouped_dtcs(&scan.dtcs) {
-            let aside = stars
-                .iter()
-                .find(|s| s.categoria == cat && s.estrelas > 0)
-                .map(|s| star_bar(s.estrelas));
+            let aside: Option<&str> = None;
             let mut lines = Vec::new();
             let mut last_zona = String::from("\0");
             for d in items {
@@ -1415,30 +1485,17 @@ fn write_diag_pdf(
         }
     }
 
-    let mut nota = ink_wrap(
-        "Leitura das avarias da viatura. A reparacao deve ser confirmada pelo tecnico.",
-        body_cols(),
-        body_pt() - 1.0,
-        0.0,
-        true,
-        body_gap(),
-    );
-    nota.push(InkLine::dim(
-        format!("{}  ·  Vanguarda Automovel Unipessoal Lda", today()),
-        body_pt() - 2.0,
-        0.0,
-        body_gap() - 0.5,
-    ));
-    draw_card(
+    paint_line(
         &doc,
-        &mut page,
-        &mut layer,
-        &mut y,
+        page,
+        layer,
         &font,
         &bg,
-        "Nota",
-        None,
-        &nota,
+        CARD_X0 + CARD_PAD,
+        PAGE_BOT + 5.0,
+        &format!("{}  ·  {EMPRESA}", today()),
+        body_pt() - 2.0,
+        true,
     );
     add_photo_pages(&doc, &mut page, &mut layer, &font, &bg, photos);
 
@@ -2121,6 +2178,7 @@ fn add_photo_pages(
             *page,
             *layer,
             font,
+            bg,
             CARD_X0 + CARD_PAD,
             PAGE_TOP - CARD_PAD - 6.0,
             caption,
@@ -2149,6 +2207,7 @@ pub fn quote_as_comercial(q: &Quote, veiculo: &str) -> OrcamentoComercial {
         q.created.clone()
     };
     OrcamentoComercial {
+        titulo: "Orçamento".into(),
         numero: q.numero.clone(),
         data,
         hora: String::new(),
@@ -2187,6 +2246,7 @@ pub fn quote_as_comercial(q: &Quote, veiculo: &str) -> OrcamentoComercial {
         } else {
             vec![q.notas.clone()]
         },
+        disclaimer: String::new(),
     }
 }
 
@@ -2198,6 +2258,17 @@ pub fn write_quote_car(dir: &Path, q: &Quote, viatura: &str) -> Result<Vec<PathB
     fs::create_dir_all(dir)?;
     let o = quote_as_comercial(q, viatura);
     let base = format!("Orcamento_{}", crate::slug::slug(&q.numero));
+    let pdf = dir.join(format!("{base}.pdf"));
+    write_orcamento_comercial_pdf(&pdf, &o)?;
+    Ok(vec![pdf])
+}
+
+pub fn write_conta_car(dir: &Path, q: &Quote, viatura: &str) -> Result<Vec<PathBuf>> {
+    fs::create_dir_all(dir)?;
+    let mut o = quote_as_comercial(q, viatura);
+    o.titulo = "Conta".into();
+    o.disclaimer = "Documento de oficina. Sem NIF. Não é fatura certificada AT.".into();
+    let base = format!("Conta_{}", crate::slug::slug(&q.numero));
     let pdf = dir.join(format!("{base}.pdf"));
     write_orcamento_comercial_pdf(&pdf, &o)?;
     Ok(vec![pdf])
@@ -2253,6 +2324,7 @@ impl OrcamentoLinha {
 }
 
 pub struct OrcamentoComercial {
+    pub titulo: String,
     pub numero: String,
     pub data: String,
     pub hora: String,
@@ -2266,6 +2338,7 @@ pub struct OrcamentoComercial {
     pub vin: String,
     pub linhas: Vec<OrcamentoLinha>,
     pub notas: Vec<String>,
+    pub disclaimer: String,
 }
 
 fn fmt_qty_pt(q: f64) -> String {
@@ -2368,18 +2441,18 @@ fn draw_orc_budget(
     let h = CARD_PAD + title_h + 3.0 + step + rows_h + disc_row + step + 2.0 + CARD_PAD;
     gold_card(doc, page, layer, CARD_X0, y_top - h, CARD_X1, y_top);
     let mut cy = y_top - CARD_PAD - 1.0;
-    place_cinzel(doc, page, layer, bg, "Orçamento", x0, cy, title_h);
+    place_cinzel(doc, page, layer, bg, &o.titulo, x0, cy, title_h);
     cy -= title_h + 1.2;
     gold_rule(doc, page, layer, x0, x1, cy + 1.2);
     cy -= 5.4;
     let head_y = cy;
-    paint_line(doc, page, layer, font, x0, head_y, "Designacao", pt, true);
-    paint_right(doc, page, layer, font, col_qty, head_y, "Qtd", pt, true);
-    paint_right(doc, page, layer, font, col_unit, head_y, "EUR", pt, true);
+    paint_line(doc, page, layer, font, bg, x0, head_y, "Designação", pt, true);
+    paint_right(doc, page, layer, font, bg, col_qty, head_y, "Qtd", pt, true);
+    paint_right(doc, page, layer, font, bg, col_unit, head_y, "EUR", pt, true);
     if show_disc {
-        paint_right(doc, page, layer, font, col_disc, head_y, "Desc. %", pt, true);
+        paint_right(doc, page, layer, font, bg, col_disc, head_y, "Desc. %", pt, true);
     }
-    paint_right(doc, page, layer, font, col_valor, head_y, "Valor", pt, true);
+    paint_right(doc, page, layer, font, bg, col_valor, head_y, "Valor", pt, true);
     cy -= 2.2;
     gold_rule(doc, page, layer, x0, x1, cy);
     cy -= step - 0.6;
@@ -2396,6 +2469,7 @@ fn draw_orc_budget(
                 page,
                 layer,
                 font,
+                bg,
                 x0,
                 row_y - i as f32 * step,
                 line,
@@ -2403,24 +2477,25 @@ fn draw_orc_budget(
                 false,
             );
         }
-        paint_right(doc, page, layer, font, col_qty, row_y, qty, pt, false);
-        paint_right(doc, page, layer, font, col_unit, row_y, unit, pt, false);
+        paint_right(doc, page, layer, font, bg, col_qty, row_y, qty, pt, false);
+        paint_right(doc, page, layer, font, bg, col_unit, row_y, unit, pt, false);
         if show_disc {
-            paint_right(doc, page, layer, font, col_disc, row_y, disc, pt, false);
+            paint_right(doc, page, layer, font, bg, col_disc, row_y, disc, pt, false);
         }
-        paint_right(doc, page, layer, font, col_valor, row_y, valor, pt, false);
+        paint_right(doc, page, layer, font, bg, col_valor, row_y, valor, pt, false);
         let used = lines.len().max(1) as f32 * step;
         gold_rule(doc, page, layer, x0, x1, cy - used + step - 1.2);
         cy -= used;
     }
     let tot = o.linhas.iter().map(|l| l.valor_cents()).sum::<i64>();
     if show_disc {
-        paint_line(doc, page, layer, font, x0, cy, "Desconto", pt, false);
+        paint_line(doc, page, layer, font, bg, x0, cy, "Desconto", pt, false);
         paint_right(
             doc,
             page,
             layer,
             font,
+            bg,
             col_valor,
             cy,
             &format!("-{}", ops::euro(off)),
@@ -2429,12 +2504,13 @@ fn draw_orc_budget(
         );
         cy -= step;
     }
-    paint_line(doc, page, layer, font, x0, cy, "Total", pt + 1.0, false);
+    paint_line(doc, page, layer, font, bg, x0, cy, "Total", pt + 1.0, false);
     paint_right(
         doc,
         page,
         layer,
         font,
+        bg,
         col_valor,
         cy,
         &ops::euro(tot),
@@ -2485,6 +2561,7 @@ fn draw_orc_notes(
             page,
             layer,
             font,
+            bg,
             x0 + line.indent,
             cy,
             &line.text,
@@ -2594,7 +2671,7 @@ fn draw_orc_top_pair(
     let mut ly = y_top - CARD_PAD - 1.0;
     place_cinzel(doc, page, layer, bg, "VANGUARDA AUTOMÓVEL", text_x, ly, 5.4);
     ly -= 7.4;
-    place_cinzel(doc, page, layer, bg, "Orçamento", text_x, ly, 7.2);
+    place_cinzel(doc, page, layer, bg, &o.titulo, text_x, ly, 7.2);
     ly -= 8.4;
     let pt = body_pt();
     let gap = line_skip(pt, 3.6);
@@ -2605,7 +2682,7 @@ fn draw_orc_top_pair(
             if w.is_empty() {
                 continue;
             }
-            paint_line(doc, page, layer, font, text_x, ly, &w, pt, false);
+            paint_line(doc, page, layer, font, bg, text_x, ly, &w, pt, false);
             ly -= gap;
         }
     }
@@ -2620,7 +2697,7 @@ fn draw_orc_top_pair(
             if w.is_empty() {
                 continue;
             }
-            paint_line(doc, page, layer, font, rx, ry, &w, pt, false);
+            paint_line(doc, page, layer, font, bg, rx, ry, &w, pt, false);
             ry -= gap;
         }
     }
@@ -2663,6 +2740,20 @@ pub fn write_orcamento_comercial_pdf(path: &Path, o: &OrcamentoComercial) -> Res
         orc_ensure_space(&doc, &bg, &mut page, &mut layer, &mut y, est);
         let h = draw_orc_notes(&doc, page, layer, &font, &bg, y, &notes);
         y -= h + CARD_GAP;
+    }
+    if !o.disclaimer.trim().is_empty() {
+        paint_line(
+            &doc,
+            page,
+            layer,
+            &font,
+            &bg,
+            CARD_X0 + CARD_PAD,
+            PAGE_BOT + 5.0,
+            o.disclaimer.trim(),
+            body_pt() - 2.0,
+            true,
+        );
     }
     let _ = y;
 
@@ -3003,31 +3094,12 @@ fn load_font(doc: &PdfDocumentReference) -> Result<IndirectFontRef> {
 
 fn pdf_safe(s: &str) -> String {
     s.replace('●', "*")
-        .replace('€', "")
         .replace('—', "-")
         .replace('–', "-")
         .replace('‘', "'")
         .replace('’', "'")
         .replace('“', "\"")
         .replace('”', "\"")
-        .replace('á', "a")
-        .replace('à', "a")
-        .replace('ã', "a")
-        .replace('â', "a")
-        .replace('Á', "A")
-        .replace('é', "e")
-        .replace('ê', "e")
-        .replace('É', "E")
-        .replace('í', "i")
-        .replace('Í', "I")
-        .replace('ó', "o")
-        .replace('ô', "o")
-        .replace('õ', "o")
-        .replace('Ó', "O")
-        .replace('ú', "u")
-        .replace('Ú', "U")
-        .replace('ç', "c")
-        .replace('Ç', "C")
 }
 
 fn wrap(s: &str, max: usize) -> Vec<String> {
@@ -3149,6 +3221,10 @@ mod tests {
         assert!(!md.to_lowercase().contains("code4bin"));
         assert!(!md.to_lowercase().contains("autocom"));
         assert!(root.join("Diagnostico_60_HU_86_20-08-2026.json").is_file());
+        let pdf_bytes = fs::read(&pdf).unwrap();
+        let ascii = String::from_utf8_lossy(&pdf_bytes);
+        assert!(!ascii.contains("Leitura das avarias"));
+        assert!(!ascii.contains("A reparacao deve ser confirmada"));
         fs::remove_dir_all(&root).unwrap();
     }
 
@@ -3460,13 +3536,12 @@ mod tests {
     }
 
     #[test]
-    fn gold_art_lands_on_black() {
-        let mut img = ::image::RgbImage::new(8, 8);
-        img.put_pixel(0, 0, ::image::Rgb([0x40, 0x44, 0x48]));
-        img.put_pixel(3, 3, ::image::Rgb([0xD4, 0xB0, 0x6A]));
-        let out = gold_art_on_black(img);
-        assert_eq!(out.get_pixel(0, 0).0, [0, 0, 0]);
-        assert_eq!(out.get_pixel(3, 3).0, [0xD4, 0xB0, 0x6A]);
+    fn gold_art_punches_plate() {
+        let mut img = ::image::RgbaImage::from_pixel(8, 8, ::image::Rgba([0x40, 0x44, 0x48, 255]));
+        img.put_pixel(3, 3, ::image::Rgba([0xD4, 0xB0, 0x6A, 255]));
+        let out = gold_art_transparent(img);
+        assert_eq!(out.get_pixel(0, 0).0[3], 0);
+        assert_eq!(out.get_pixel(3, 3).0, [0xD4, 0xB0, 0x6A, 255]);
     }
 
     #[test]
@@ -3541,6 +3616,7 @@ mod tests {
         write_orcamento_comercial_pdf(
             &dest,
             &OrcamentoComercial {
+                titulo: "Orçamento".into(),
                 numero: "1".into(),
                 data: "04/09/2026".into(),
                 hora: "20:46".into(),
@@ -3556,6 +3632,7 @@ mod tests {
                 notas: vec![
                     "Relatório 04/09/2026\nPonteiras de direcção, apoios do triângulo, depósito de expansão e tubo de saída. Fora deste orçamento: fecho centralizado e sensores do habitáculo.".into(),
                 ],
+                disclaimer: String::new(),
             },
         )
         .unwrap();

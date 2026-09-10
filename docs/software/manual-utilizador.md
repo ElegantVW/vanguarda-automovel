@@ -2,7 +2,7 @@
 
 Programa de secretária. Dados em `Documents\Vanguarda\Dados\Clientes` (disco local, **não** OneDrive).
 
-Atalho no Ambiente de Trabalho e em `App\Vanguarda.exe`. `alha.toml` ao lado do exe aponta para a casa. A janela abre maximizada. Depois do primeiro arranque, o Vanguarda entra no início de sessão do Windows (esta conta).
+Atalho no Ambiente de Trabalho e em `App\Vanguarda.exe`. `alha.toml` ao lado do exe aponta para a casa. A janela segue o ecrã (maximizada, sem faixa preta). O login é um cartão ao centro. Depois do primeiro arranque, o Vanguarda entra no início de sessão do Windows (esta conta).
 
 ## Duas contas, duas coisas
 
@@ -54,7 +54,7 @@ Permissões da **mesa**:
 
 É uma **visita**, não um formulário de 6 passos. Qualquer mesa da loja (não a conta do software).
 
-**Novo:** até escolheres o carro, só a lista. Depois: identidade + histórico à esquerda; Autocom, códigos por sistema, carta e 1–5★ à direita. **Abrir PDF Autocom…** (ou larga o PDF na janela). FORScan / vLinker em *Outras origens*.
+**Novo:** até escolheres o carro, a lista preenche a janela (filtro + uma linha por viatura). Depois: identidade + histórico à esquerda; Autocom, códigos por sistema, carta e 1–5★ à direita (os campos alongam-se com o ecrã). **Abrir PDF Autocom…** (ou larga o PDF na janela). FORScan / vLinker em *Outras origens*.
 
 **Abrir** um relatório gravado abre a mesma visita. **Apagar** pede confirmação.
 
@@ -64,7 +64,7 @@ Rodapé: **Gravar**, **Pré-visualizar**, **Abrir PDF**, **Exportar PDF**. Depoi
 
 Uma tabela: **Mão de obra** (horas × €/h) e **Peças** (Peça · Qtd · Custo · Margem · Venda · % · Valor). **Contas da casa** fica no cartão à direita (custo, venda, lucro, câmbio USD) e **não sai no PDF**. Venda = custo × (1 + margem %). A coluna **%** na linha é cortesia ao cliente; no PDF **Desc. %** só aparece se houver corte. Margem começa em 40. `$` no custo usa **1 USD = … €**. Sem IVA — não é fatura AT.
 
-**Gravar**, **Exportar PDF** e **Aceitar - trabalho** ficam debaixo do cliente/viatura (sempre visíveis). Aceitar copia linhas e previsão para a ordem. Interiores ainda não à venda.
+**Gravar**, **Exportar PDF** e **Aceitar - trabalho** ficam debaixo do cliente/viatura (sempre visíveis). Aceitar copia linhas e previsão para a ordem. Orçamento **aceite** → **Emitir conta** (Trabalho · Conta, número `CTA-…`). A conta é o documento de pagamento da oficina: mesma tabela, sem NIF, sem IVA. **Não é fatura certificada AT.** Interiores ainda não à venda.
 
 ## Pessoas
 
@@ -78,4 +78,4 @@ A conta do software não passa por aqui. Sistema já não cria pessoas.
 
 ## O que isto não faz
 
-Não emite fatura certificada AT. Recibos na pasta Media são comprovativos. TVDE fica no arquivo OneDrive, fora desta app.
+Não emite fatura certificada AT. A **Conta** (`CTA-`) é só o documento de oficina para o cliente pagar. Recibos na pasta Media são comprovativos. TVDE fica no arquivo OneDrive, fora desta app.

@@ -27,7 +27,7 @@ Ler: [docs/00-indice.md](docs/00-indice.md) → [plano mestre](docs/plano/plano-
 | [docs/plano/](docs/plano/) | Plano mestre das fases 1–6 |
 | [docs/checklists/](docs/checklists/) | Checklist acionável por fase |
 | [docs/software/](docs/software/) | Manuais da app (utilizar, Design, PII, compilar, diagnóstico, preços) |
-| [tools/ficha-cliente/](tools/ficha-cliente/) | App Windows: Front/Back, Pessoas, Relatório, Care, Trabalho, Agenda, Stock |
+| [tools/ficha-cliente/](tools/ficha-cliente/) | App Windows: Front/Back, Pessoas, Relatório, Care, Trabalho (orçamento / ordem / conta), Agenda, Stock |
 | [tools/diagnostico/](tools/diagnostico/) | Crate do vLinker FS — OBD/UDS público, mock no CI |
 
 ## Decisões fechadas

@@ -10,6 +10,7 @@ pub const JOB_ESTADOS: &[&str] = &[
     "cancelado",
 ];
 pub const QUOTE_ESTADOS: &[&str] = &["rascunho", "enviado", "aceite", "recusado", "expirado"];
+pub const CONTA_ESTADOS: &[&str] = &["rascunho", "emitida", "paga", "anulada"];
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Line {
@@ -215,6 +216,9 @@ pub struct Quote {
     /// € per 1 USD. 0 = unused. House only.
     #[serde(default)]
     pub usd_eur: f64,
+    /// Source orçamento when this row is a conta. Unused on quotes.
+    #[serde(default)]
+    pub parent_quote_id: Option<i64>,
 }
 
 impl Default for Quote {
@@ -236,6 +240,7 @@ impl Default for Quote {
             valid_until: String::new(),
             colaborador: String::new(),
             usd_eur: 0.0,
+            parent_quote_id: None,
         }
     }
 }
@@ -477,6 +482,9 @@ pub fn estado_label(e: &str) -> &str {
         "pronto" => "Pronto",
         "entregue" => "Entregue",
         "cancelado" => "Cancelado",
+        "emitida" => "Emitida",
+        "paga" => "Paga",
+        "anulada" => "Anulada",
         _ => e,
     }
 }

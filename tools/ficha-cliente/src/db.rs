@@ -66,6 +66,23 @@ pub fn open(clientes: &Path) -> Result<Connection> {
             estado TEXT NOT NULL DEFAULT 'em_stock',
             notas TEXT NOT NULL DEFAULT ''
         );
+        CREATE TABLE IF NOT EXISTS contas (
+            id INTEGER PRIMARY KEY,
+            numero TEXT NOT NULL UNIQUE,
+            estado TEXT NOT NULL,
+            cliente TEXT NOT NULL,
+            matricula TEXT NOT NULL DEFAULT '',
+            vin TEXT NOT NULL DEFAULT '',
+            tipo TEXT NOT NULL,
+            linhas TEXT NOT NULL,
+            total_cents INTEGER NOT NULL DEFAULT 0,
+            notas TEXT NOT NULL DEFAULT '',
+            quote_id INTEGER,
+            job_id INTEGER,
+            created TEXT NOT NULL,
+            colaborador TEXT NOT NULL DEFAULT '',
+            usd_eur REAL NOT NULL DEFAULT 0
+        );
         CREATE TABLE IF NOT EXISTS seq (
             kind TEXT PRIMARY KEY,
             n INTEGER NOT NULL
@@ -118,6 +135,25 @@ fn migrate(conn: &Connection) -> Result<()> {
             [],
         )?;
     }
+    conn.execute_batch(
+        "CREATE TABLE IF NOT EXISTS contas (
+            id INTEGER PRIMARY KEY,
+            numero TEXT NOT NULL UNIQUE,
+            estado TEXT NOT NULL,
+            cliente TEXT NOT NULL,
+            matricula TEXT NOT NULL DEFAULT '',
+            vin TEXT NOT NULL DEFAULT '',
+            tipo TEXT NOT NULL,
+            linhas TEXT NOT NULL,
+            total_cents INTEGER NOT NULL DEFAULT 0,
+            notas TEXT NOT NULL DEFAULT '',
+            quote_id INTEGER,
+            job_id INTEGER,
+            created TEXT NOT NULL,
+            colaborador TEXT NOT NULL DEFAULT '',
+            usd_eur REAL NOT NULL DEFAULT 0
+        );",
+    )?;
     migrate_pessoa(conn)?;
     Ok(())
 }
@@ -186,6 +222,114 @@ pub fn next_quote_numero(conn: &Connection) -> Result<String> {
         params![kind, n],
     )?;
     Ok(format!("ORC-{year}-{n:04}"))
+}
+
+pub fn next_conta_numero(conn: &Connection) -> Result<String> {
+    let year = chrono::Local::now().format("%Y").to_string();
+    let kind = format!("cta-{year}");
+    let n: i64 = conn
+        .query_row(
+            "SELECT n FROM seq WHERE kind = ?1",
+            params![kind],
+            |r| r.get(0),
+        )
+        .optional()?
+        .unwrap_or(0)
+        + 1;
+    conn.execute(
+        "INSERT INTO seq(kind, n) VALUES (?1, ?2)
+         ON CONFLICT(kind) DO UPDATE SET n = excluded.n",
+        params![kind, n],
+    )?;
+    Ok(format!("CTA-{year}-{n:04}"))
+}
+
+pub fn save_conta(conn: &Connection, q: &mut Quote) -> Result<i64> {
+    q.recompute();
+    if q.created.trim().is_empty() {
+        q.created = today();
+    }
+    if q.numero.trim().is_empty() {
+        q.numero = next_conta_numero(conn)?;
+    }
+    if q.estado.trim().is_empty() {
+        q.estado = "emitida".into();
+    }
+    if q.id == 0 {
+        conn.execute(
+            "INSERT INTO contas(numero, estado, cliente, matricula, vin, tipo, linhas, total_cents, notas, quote_id, job_id, created, colaborador, usd_eur)
+             VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,?14)",
+            params![
+                q.numero,
+                q.estado,
+                q.cliente,
+                q.matricula,
+                q.vin,
+                q.tipo,
+                lines_json(&q.linhas),
+                q.total_cents,
+                q.notas,
+                q.parent_quote_id,
+                q.job_id,
+                q.created,
+                q.colaborador,
+                q.usd_eur
+            ],
+        )?;
+        q.id = conn.last_insert_rowid();
+    } else {
+        conn.execute(
+            "UPDATE contas SET numero=?1, estado=?2, cliente=?3, matricula=?4, vin=?5, tipo=?6, linhas=?7, total_cents=?8, notas=?9, quote_id=?10, job_id=?11, colaborador=?12, usd_eur=?13 WHERE id=?14",
+            params![
+                q.numero,
+                q.estado,
+                q.cliente,
+                q.matricula,
+                q.vin,
+                q.tipo,
+                lines_json(&q.linhas),
+                q.total_cents,
+                q.notas,
+                q.parent_quote_id,
+                q.job_id,
+                q.colaborador,
+                q.usd_eur,
+                q.id
+            ],
+        )?;
+    }
+    Ok(q.id)
+}
+
+fn conta_from_row(r: &rusqlite::Row<'_>) -> rusqlite::Result<Quote> {
+    let linhas: String = r.get(7)?;
+    Ok(Quote {
+        id: r.get(0)?,
+        numero: r.get(1)?,
+        estado: r.get(2)?,
+        cliente: r.get(3)?,
+        matricula: r.get(4)?,
+        vin: r.get(5)?,
+        tipo: r.get(6)?,
+        linhas: lines_parse(&linhas),
+        total_cents: r.get(8)?,
+        iva_incluido: false,
+        notas: r.get(9)?,
+        parent_quote_id: r.get(10)?,
+        job_id: r.get(11)?,
+        created: r.get(12)?,
+        valid_until: String::new(),
+        colaborador: r.get(13)?,
+        usd_eur: r.get::<_, f64>(14).unwrap_or(0.0),
+    })
+}
+
+pub fn list_contas(conn: &Connection) -> Result<Vec<Quote>> {
+    let mut st = conn.prepare(
+        "SELECT id, numero, estado, cliente, matricula, vin, tipo, linhas, total_cents, notas, quote_id, job_id, created, colaborador, usd_eur FROM contas ORDER BY id DESC",
+    )?;
+    let rows = st.query_map([], conta_from_row)?;
+    Ok(rows.filter_map(|r| r.ok()).collect())
 }
 
 pub fn save_quote(conn: &Connection, q: &mut Quote) -> Result<i64> {
@@ -323,6 +467,7 @@ fn quote_from_row(r: &rusqlite::Row<'_>) -> rusqlite::Result<Quote> {
         valid_until: r.get(13)?,
         colaborador: r.get::<_, String>(14).unwrap_or_default(),
         usd_eur: r.get::<_, f64>(15).unwrap_or(0.0),
+        parent_quote_id: None,
     })
 }
 
@@ -492,6 +637,16 @@ mod tests {
         let skus = list_sku(&conn).unwrap();
         assert!(skus.iter().any(|s| s.codigo == "WPU001"));
         assert!(skus.iter().any(|s| s.codigo == "FOCUS-12"));
+        let mut c = q.clone();
+        c.id = 0;
+        c.numero.clear();
+        c.estado = "emitida".into();
+        c.parent_quote_id = Some(q.id);
+        save_conta(&conn, &mut c).unwrap();
+        assert!(c.numero.starts_with("CTA-"));
+        let cs = list_contas(&conn).unwrap();
+        assert_eq!(cs[0].parent_quote_id, Some(q.id));
+        assert_eq!(cs[0].total_cents, 29000);
         let _ = std::fs::remove_dir_all(&dir);
     }
 }

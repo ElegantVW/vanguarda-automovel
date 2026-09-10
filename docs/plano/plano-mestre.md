@@ -142,7 +142,7 @@ As fases 1–6 são o lançamento físico. O programa em `tools/ficha-cliente` �
 
 Manuais: [docs/software/](../software/manual-utilizador.md). Diagnóstico próprio: [vLinker](../software/diagnostico.md), crate `tools/diagnostico`. Preços na app: [precos-internos.md](../software/precos-internos.md) até a Fase 6 fechar uma lista.
 
-TVDE, faturação AT e NDAs **não** entram na app.
+TVDE, faturação AT certificada e NDAs **não** entram na app. A **Conta** (`CTA-`) é o documento de pagamento da oficina (sem NIF, sem valor fiscal).
 
 ## 10. Checklists
 

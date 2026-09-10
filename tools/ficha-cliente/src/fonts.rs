@@ -205,6 +205,59 @@ pub fn raster_title_rgba(text: &str, px: f32, gold: bool) -> Result<(image::Rgba
     Ok((img, w, h))
 }
 
+/// Rajdhani body as RGBA (transparent paper). Portuguese stays in the font.
+pub fn raster_body_rgba(text: &str, px: f32, gold: bool) -> Result<(image::RgbaImage, u32, u32)> {
+    let cinzel = FontRef::try_from_slice(CINZEL).context("Cinzel")?;
+    let raj = FontRef::try_from_slice(RAJDHANI).context("Rajdhani")?;
+    let scale = PxScale::from(px.max(10.0));
+    let mut x = 2.0_f32;
+    let mut glyphs: Vec<(FontRef, ab_glyph::Glyph)> = Vec::new();
+    for ch in text.chars() {
+        if ch == '\n' {
+            continue;
+        }
+        let use_cinzel = raj.glyph_id(ch).0 == 0;
+        let font = if use_cinzel { cinzel.clone() } else { raj.clone() };
+        let scaled = font.as_scaled(scale);
+        let gid = scaled.glyph_id(ch);
+        let g = gid.with_scale_and_position(scale, point(x, px * 0.82));
+        x += scaled.h_advance(gid);
+        glyphs.push((font, g));
+    }
+    let w = (x + 6.0).ceil().max(8.0) as u32;
+    let h = (px * 1.45).ceil().max(8.0) as u32;
+    let ink = if gold {
+        [0xD4_u8, 0xB0, 0x6A]
+    } else {
+        [0xC4_u8, 0xB4, 0x90]
+    };
+    let mut img = image::RgbaImage::from_pixel(w, h, image::Rgba([0, 0, 0, 0]));
+    let plot = |img: &mut image::RgbaImage, gx: u32, gy: u32, cover: f32| {
+        if cover <= 0.02 || gx >= img.width() || gy >= img.height() {
+            return;
+        }
+        let a = (cover.clamp(0.0, 1.0) * 255.0).round() as u8;
+        let p = img.get_pixel_mut(gx, gy);
+        if a > p.0[3] {
+            p.0 = [ink[0], ink[1], ink[2], a];
+        }
+    };
+    for (font, g) in &glyphs {
+        if let Some(out) = font.outline_glyph(g.clone()) {
+            let b = out.px_bounds();
+            out.draw(|dx, dy, c| {
+                plot(
+                    &mut img,
+                    (b.min.x + dx as f32).round() as u32,
+                    (b.min.y + dy as f32).round() as u32,
+                    c,
+                );
+            });
+        }
+    }
+    Ok((img, w, h))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -219,6 +272,10 @@ mod tests {
                 "Rajdhani missing {ch}"
             );
         }
+        let (img, w, h) = raster_body_rgba("Relatório Identificação", 32.0, true).unwrap();
+        assert!(w > 80 && h > 10, "body raster {w}x{h}");
+        let ink = img.pixels().filter(|p| p.0[3] > 40).count();
+        assert!(ink > 40, "Relatório must paint glyphs, not empty paper");
         let (jpeg, w, h) = raster_gold_line("MOTOR", 40.0).unwrap();
         assert!(w > 20 && h > 10);
         assert!(jpeg.starts_with(&[0xFF, 0xD8]), "jpeg soi");

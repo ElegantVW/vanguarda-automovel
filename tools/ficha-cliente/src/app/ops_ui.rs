@@ -137,6 +137,119 @@ impl FichaApp {
         }
     }
 
+    pub(super) fn save_conta(&mut self) -> bool {
+        if !self.can_edit_ops() {
+            self.set_status(false, "Este departamento não edita contas.");
+            return false;
+        }
+        if self.conta.cliente.trim().is_empty() {
+            self.set_status(false, "A conta precisa de um cliente.");
+            return false;
+        }
+        if self.conta.matricula.trim().is_empty() && self.conta.vin.trim().is_empty() {
+            self.set_status(false, "Escolhe a viatura do cliente.");
+            return false;
+        }
+        self.conta.iva_incluido = false;
+        if self.conta.colaborador.trim().is_empty() {
+            self.conta.colaborador = self.who();
+        }
+        self.bind_pdf_style();
+        match db::open(&self.root_path()) {
+            Ok(conn) => match db::save_conta(&conn, &mut self.conta) {
+                Ok(_) => {
+                    let dir = self.ops_dir();
+                    let viatura = self.conta_veiculo_name();
+                    match writers::write_conta_car(&dir, &self.conta, &viatura) {
+                        Ok(w) => {
+                            if let Some(p) = w
+                                .iter()
+                                .find(|p| p.extension().and_then(|e| e.to_str()) == Some("pdf"))
+                            {
+                                self.last_quote_pdf = Some(p.clone());
+                            }
+                            self.reload_ops();
+                            self.mark_clean();
+                            audit::append(
+                                &self.root_path(),
+                                &self.who(),
+                                "guardar-conta",
+                                &self.conta.numero,
+                            );
+                            self.set_status(true, format!("Conta {} gravada.", self.conta.numero));
+                            true
+                        }
+                        Err(e) => {
+                            self.set_status(false, format!("JSON gravado, PDF falhou: {e:#}"));
+                            true
+                        }
+                    }
+                }
+                Err(e) => {
+                    self.set_status(false, format!("{e:#}"));
+                    false
+                }
+            },
+            Err(e) => {
+                self.set_status(false, format!("{e:#}"));
+                false
+            }
+        }
+    }
+
+    fn conta_veiculo_name(&self) -> String {
+        self.cars
+            .iter()
+            .find(|c| {
+                (!self.conta.matricula.trim().is_empty()
+                    && c.matricula == self.conta.matricula)
+                    || (!self.conta.vin.trim().is_empty() && c.vin == self.conta.vin)
+            })
+            .map(|c| c.label())
+            .unwrap_or_default()
+    }
+
+    fn emit_conta_from_quote(&mut self) {
+        if !self.can_edit_ops() {
+            return;
+        }
+        if self.quote.id == 0 && !self.save_quote() {
+            return;
+        }
+        if self.quote.estado != "aceite" {
+            self.set_status(false, "Aceita o orçamento antes de emitir a conta.");
+            return;
+        }
+        let mut c = self.quote.clone();
+        c.id = 0;
+        c.numero.clear();
+        c.estado = "emitida".into();
+        c.parent_quote_id = Some(self.quote.id);
+        c.created.clear();
+        self.conta = c;
+        if self.save_conta() {
+            self.trab_kind = TrabKind::Conta;
+            self.desk_gate = DeskGate::Form;
+            self.set_status(true, format!("Conta {} emitida.", self.conta.numero));
+        }
+    }
+
+    fn reset_conta_draft(&mut self) {
+        self.conta = Quote::default();
+        self.conta.colaborador = self.who();
+        self.conta.estado = "rascunho".into();
+        if let Some(d) = self.dept() {
+            self.conta.tipo = match d {
+                Departamento::Care => "care".into(),
+                Departamento::Interiores => "pintura".into(),
+                Departamento::Oficina => "oficina".into(),
+                _ => "oficina".into(),
+            };
+        }
+        self.last_quote_pdf = None;
+        self.mark_clean();
+    }
+
     fn open_job_desk(&mut self) {
         self.trab_kind = TrabKind::Job;
         self.desk_gate = DeskGate::Form;
@@ -526,6 +639,46 @@ impl FichaApp {
         }
     }
 
+    fn ui_conta_list(&mut self, ui: &mut egui::Ui) {
+        ui.horizontal(|ui| {
+            ui.label("Filtro:");
+            ui.add(
+                egui::TextEdit::singleline(&mut self.filter_ops)
+                    .desired_width(160.0)
+                    .hint_text("número, cliente"),
+            );
+        });
+        let qf = self.filter_ops.to_lowercase();
+        let mut pick: Option<Quote> = None;
+        egui::ScrollArea::vertical()
+            .id_salt("conta-list")
+            .max_height(220.0)
+            .show(ui, |ui| {
+                ui.set_width(ui.available_width());
+                for q in &self.contas {
+                    if !qf.is_empty() && !q.label().to_lowercase().contains(&qf) {
+                        continue;
+                    }
+                    let on = self.conta.id == q.id;
+                    let line = format!("{}{}", if on { "●  " } else { "·  " }, q.label());
+                    if board_hit(ui, &line) {
+                        pick = Some(q.clone());
+                    }
+                }
+            });
+        if let Some(q) = pick {
+            self.conta = q;
+            self.desk_gate = DeskGate::Form;
+            self.mark_clean();
+        }
+    }
+
+    fn ui_conta_form(&mut self, ui: &mut egui::Ui, edit: bool) {
+        std::mem::swap(&mut self.quote, &mut self.conta);
+        self.ui_quote_form(ui, edit);
+        std::mem::swap(&mut self.quote, &mut self.conta);
+    }
+
     fn ui_quote_kind(&mut self, ui: &mut egui::Ui, mao: bool, edit: bool) {
         let usd = self.quote.usd_eur;
         let mut kill: Option<usize> = None;
@@ -880,10 +1033,15 @@ impl FichaApp {
             self.quote.tipo = t;
             ui.label("Estado:");
             let mut e = self.quote.estado.clone();
+            let estados: &[&str] = if self.trab_kind == TrabKind::Conta {
+                CONTA_ESTADOS
+            } else {
+                QUOTE_ESTADOS
+            };
             egui::ComboBox::from_id_salt("q-est")
                 .selected_text(ops::estado_label(&e))
                 .show_ui(ui, |ui| {
-                    for x in QUOTE_ESTADOS {
+                    for x in estados {
                         ui.selectable_value(&mut e, (*x).to_string(), ops::estado_label(x));
                     }
                 });
@@ -943,21 +1101,58 @@ impl FichaApp {
             }
         });
         ui.add_space(4.0);
+        let conta = self.trab_kind == TrabKind::Conta;
         ui.horizontal_wrapped(|ui| {
-            if edit && gold_button(ui, "Novo orçamento", [160.0, 30.0]) {
-                self.reset_quote_draft();
-            }
-            if edit && gold_button(ui, "Gravar orçamento", [180.0, 30.0]) {
-                self.save_quote();
-            }
-            if gold_button(ui, "Exportar PDF", [160.0, 30.0]) {
-                self.export_quote_pdf();
-            }
-            if edit && steel_button(ui, "Aceitar - trabalho", [180.0, 30.0]) {
-                self.accept_quote();
-            }
-            if steel_button(ui, "CSV orçamentos", [150.0, 30.0]) {
-                self.export_quotes_csv();
+            if conta {
+                if edit && gold_button(ui, "Nova conta", [140.0, 30.0]) {
+                    self.reset_conta_draft();
+                    self.quote = self.conta.clone();
+                }
+                if edit && gold_button(ui, "Gravar conta", [160.0, 30.0]) {
+                    std::mem::swap(&mut self.quote, &mut self.conta);
+                    self.save_conta();
+                    std::mem::swap(&mut self.quote, &mut self.conta);
+                }
+                if gold_button(ui, "Exportar PDF", [160.0, 30.0]) {
+                    std::mem::swap(&mut self.quote, &mut self.conta);
+                    let _ = writers::write_conta_car(
+                        &self.ops_dir(),
+                        &self.conta,
+                        &self.conta_veiculo_name(),
+                    );
+                    std::mem::swap(&mut self.quote, &mut self.conta);
+                }
+                if edit
+                    && self.quote.estado != "paga"
+                    && gold_button(ui, "Marcar paga", [140.0, 30.0])
+                {
+                    self.quote.estado = "paga".into();
+                    std::mem::swap(&mut self.quote, &mut self.conta);
+                    self.save_conta();
+                    std::mem::swap(&mut self.quote, &mut self.conta);
+                }
+            } else {
+                if edit && gold_button(ui, "Novo orçamento", [160.0, 30.0]) {
+                    self.reset_quote_draft();
+                }
+                if edit && gold_button(ui, "Gravar orçamento", [180.0, 30.0]) {
+                    self.save_quote();
+                }
+                if gold_button(ui, "Exportar PDF", [160.0, 30.0]) {
+                    self.export_quote_pdf();
+                }
+                if edit && steel_button(ui, "Aceitar - trabalho", [180.0, 30.0]) {
+                    self.accept_quote();
+                }
+                if edit
+                    && self.quote.estado == "aceite"
+                    && gold_button(ui, "Emitir conta", [160.0, 30.0])
+                {
+                    self.emit_conta_from_quote();
+                }
+                if steel_button(ui, "CSV orçamentos", [150.0, 30.0]) {
+                    self.export_quotes_csv();
+                }
             }
         });
     }
@@ -1169,6 +1364,7 @@ impl FichaApp {
         ui.horizontal_wrapped(|ui| {
             let q_on = self.trab_kind == TrabKind::Quote;
             let j_on = self.trab_kind == TrabKind::Job;
+            let c_on = self.trab_kind == TrabKind::Conta;
             if if q_on {
                 gold_button(ui, "Orçamento", [140.0, 30.0])
             } else {
@@ -1185,49 +1381,69 @@ impl FichaApp {
                 self.trab_kind = TrabKind::Job;
                 self.desk_gate = DeskGate::Menu;
             }
+            if if c_on {
+                gold_button(ui, "Conta", [120.0, 30.0])
+            } else {
+                steel_button(ui, "Conta", [120.0, 30.0])
+            } {
+                self.trab_kind = TrabKind::Conta;
+                self.desk_gate = DeskGate::Menu;
+            }
         });
         ui.add_space(4.0);
         let door = ui_doors(ui, &mut self.desk_gate);
         if door == Some(DeskGate::Form) {
-            if self.trab_kind == TrabKind::Quote {
-                self.reset_quote_draft();
-            } else {
-                self.job = Job::default();
-                self.mark_clean();
+            match self.trab_kind {
+                TrabKind::Quote => self.reset_quote_draft(),
+                TrabKind::Conta => self.reset_conta_draft(),
+                TrabKind::Job => {
+                    self.job = Job::default();
+                    self.mark_clean();
+                }
             }
         }
         if self.desk_gate == DeskGate::Menu {
             ui.label(
-                RichText::new(if self.trab_kind == TrabKind::Quote {
-                    "Abrir um orçamento gravado, fazer um novo, ou apagar. Procurar fica em Abrir."
-                } else {
-                    "Abrir uma ordem, criar uma nova, ou apagar. Depois da aprovação: Aceitar no orçamento já traz o carro."
+                RichText::new(match self.trab_kind {
+                    TrabKind::Quote => {
+                        "Abrir um orçamento gravado, fazer um novo, ou apagar. Procurar fica em Abrir."
+                    }
+                    TrabKind::Conta => {
+                        "Abrir uma conta, emitir a partir de um orçamento aceite, ou criar uma nova. Sem NIF — não é fatura AT."
+                    }
+                    TrabKind::Job => {
+                        "Abrir uma ordem, criar uma nova, ou apagar. Depois da aprovação: Aceitar no orçamento já traz o carro."
+                    }
                 })
                 .color(WHITE)
                 .size(13.0),
             );
             return;
         }
-        let quote = self.trab_kind == TrabKind::Quote;
         match self.desk_gate {
-            DeskGate::Abrir => {
-                if quote {
+            DeskGate::Abrir => match self.trab_kind {
+                TrabKind::Quote => self.ui_quote_list(ui),
+                TrabKind::Conta => self.ui_conta_list(ui),
+                TrabKind::Job => self.ui_job_list(ui),
+            },
+            DeskGate::Apagar => match self.trab_kind {
+                TrabKind::Quote => {
                     self.ui_quote_list(ui);
-                } else {
-                    self.ui_job_list(ui);
+                    ui.label(
+                        RichText::new("Apagar orçamentos ainda não está nesta versão. Anula o estado.")
+                            .color(BRASS)
+                            .size(12.0),
+                    );
                 }
-            }
-            DeskGate::Apagar => {
-                if quote {
-                    self.ui_quote_list(ui);
-                    if self.quote.id != 0 {
-                        ui.label(
-                            RichText::new("Apagar orçamentos ainda não está nesta versão. Anula o estado.")
-                                .color(BRASS)
-                                .size(12.0),
-                        );
-                    }
-                } else {
+                TrabKind::Conta => {
+                    self.ui_conta_list(ui);
+                    ui.label(
+                        RichText::new("Para anular: estado Anulada e Gravar.")
+                            .color(BRASS)
+                            .size(12.0),
+                    );
+                }
+                TrabKind::Job => {
                     self.ui_job_list(ui);
                     ui.label(
                         RichText::new("Para anular: estado Cancelado e Gravar.")
@@ -1235,13 +1451,13 @@ impl FichaApp {
                             .size(12.0),
                     );
                 }
-            }
+            },
             DeskGate::Form => {
                 ui.set_min_height((ui.available_height() - 8.0).max(200.0));
-                if quote {
-                    self.ui_quote_form(ui, edit);
-                } else {
-                    self.ui_job_form(ui, edit);
+                match self.trab_kind {
+                    TrabKind::Quote => self.ui_quote_form(ui, edit),
+                    TrabKind::Conta => self.ui_conta_form(ui, edit),
+                    TrabKind::Job => self.ui_job_form(ui, edit),
                 }
             }
             DeskGate::Menu => {}

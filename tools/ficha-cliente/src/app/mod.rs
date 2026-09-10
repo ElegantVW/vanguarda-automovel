@@ -23,7 +23,7 @@ use crate::people;
 use crate::writers::{self, WriteOpts};
 use crate::audit;
 use crate::db;
-use crate::ops::{self, Job, Line, Quote, Sku, JOB_ESTADOS, JOB_TIPOS, QUOTE_ESTADOS};
+use crate::ops::{self, Job, Line, Quote, Sku, CONTA_ESTADOS, JOB_ESTADOS, JOB_TIPOS, QUOTE_ESTADOS};
 use eframe::egui::{self, Color32, Pos2, Rect, RichText, Sense, Vec2};
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -51,6 +51,7 @@ enum DeskGate {
 enum TrabKind {
     Quote,
     Job,
+    Conta,
 }
 
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -147,9 +148,11 @@ pub struct FichaApp {
     show_dirty: bool,
     pending_mode: Option<Mode>,
     quotes: Vec<Quote>,
+    contas: Vec<Quote>,
     jobs: Vec<Job>,
     skus: Vec<Sku>,
     quote: Quote,
+    conta: Quote,
     job: Job,
     sku: Sku,
     line_desc: String,
@@ -170,6 +173,8 @@ pub struct FichaApp {
     desk_gate: DeskGate,
     trab_kind: TrabKind,
     filter_jobs: String,
+    boot_max: u8,
+    login_need_focus: bool,
 }
 
 #[derive(Clone, Copy)]
@@ -310,9 +315,11 @@ impl FichaApp {
             show_dirty: false,
             pending_mode: None,
             quotes: Vec::new(),
+            contas: Vec::new(),
             jobs: Vec::new(),
             skus: Vec::new(),
             quote: Quote::default(),
+            conta: Quote::default(),
             job: Job::default(),
             sku: Sku::default(),
             line_desc: String::new(),
@@ -333,6 +340,8 @@ impl FichaApp {
             desk_gate: DeskGate::Menu,
             trab_kind: TrabKind::Quote,
             filter_jobs: String::new(),
+            boot_max: 45,
+            login_need_focus: true,
         };
         writers::set_house_style(app.doc_style.clone());
         let _ = media::seed_design_kit();
@@ -397,6 +406,7 @@ impl FichaApp {
             Ok(conn) => {
                 let _ = db::seed_if_empty(&conn, &[], &ops::stardust_seed());
                 self.quotes = db::list_quotes(&conn).unwrap_or_default();
+                self.contas = db::list_contas(&conn).unwrap_or_default();
                 self.jobs = db::list_jobs(&conn).unwrap_or_default();
                 self.skus = db::list_sku(&conn).unwrap_or_default();
             }
@@ -663,8 +673,9 @@ impl FichaApp {
             Mode::Guias => self.guia_body.clone(),
             Mode::Sistema => serde_json::to_string(&self.staff).unwrap_or_default(),
             Mode::Trabalho => format!(
-                "{}|{}",
+                "{}|{}|{}",
                 serde_json::to_string(&self.quote).unwrap_or_default(),
+                serde_json::to_string(&self.conta).unwrap_or_default(),
                 serde_json::to_string(&self.job).unwrap_or_default()
             ),
             Mode::Stock => serde_json::to_string(&self.sku).unwrap_or_default(),
@@ -709,6 +720,7 @@ impl FichaApp {
             Mode::Staff => self.save_staff(),
             Mode::Trabalho => {
                 let _ = self.save_quote();
+                let _ = self.save_conta();
                 let _ = self.save_job();
             }
             Mode::Stock => {
@@ -1947,6 +1959,31 @@ impl FichaApp {
             .collect();
     }
 
+    fn fit_to_screen(&mut self, ctx: &egui::Context) {
+        if self.boot_max == 0 {
+            return;
+        }
+        let vp = ctx.input(|i| i.viewport().clone());
+        if vp.maximized == Some(true) {
+            self.boot_max = 0;
+            return;
+        }
+        if let (Some(mon), Some(inner)) = (vp.monitor_size, vp.inner_rect) {
+            if inner.width() >= mon.x * 0.90 && inner.height() >= mon.y * 0.82 {
+                self.boot_max = 0;
+                return;
+            }
+        }
+        if let Some(mon) = vp.monitor_size {
+            if mon.x > 400.0 && mon.y > 300.0 {
+                ctx.send_viewport_cmd(egui::ViewportCommand::InnerSize(mon));
+            }
+        }
+        ctx.send_viewport_cmd(egui::ViewportCommand::Maximized(true));
+        self.boot_max = self.boot_max.saturating_sub(1);
+        ctx.request_repaint();
+    }
+
     fn paint_window_bg(&self, ctx: &egui::Context) {
         let layer = egui::LayerId::background();
         let rect = ctx.screen_rect();
@@ -2002,41 +2039,46 @@ impl FichaApp {
         }
         egui::CentralPanel::default()
             .frame(egui::Frame::NONE)
+            .show(ctx, |_| {});
+        egui::Area::new(egui::Id::new("v-login"))
+            .anchor(egui::Align2::CENTER_CENTER, Vec2::ZERO)
+            .order(egui::Order::Middle)
             .show(ctx, |ui| {
                 ui.multiply_opacity(fade);
-                const COL: f32 = 300.0;
-                let card_w = COL + 48.0;
-                ui.add_space((ui.available_height() * 0.18).clamp(40.0, 120.0));
-                ui.horizontal(|ui| {
-                    let pad = ((ui.available_width() - card_w) * 0.5).max(0.0);
-                    ui.add_space(pad);
-                    egui::Frame::new()
-                        .fill(PANEL)
-                        .stroke(egui::Stroke::new(1.0_f32, LINE))
-                        .corner_radius(8.0)
-                        .inner_margin(egui::Margin::same(24))
-                        .show(ui, |ui| {
+                const COL: f32 = 360.0;
+                egui::Frame::new()
+                    .fill(PANEL)
+                    .stroke(egui::Stroke::new(1.0_f32, LINE))
+                    .corner_radius(8.0)
+                    .inner_margin(egui::Margin::same(28))
+                    .show(ui, |ui| {
                         ui.set_width(COL);
-                        ui.spacing_mut().item_spacing.y = 6.0;
-                        ui.with_layout(egui::Layout::top_down(egui::Align::Min), |ui| {
-                        ui.set_width(COL);
-                        if let Some(logo) = &self.logo_tex {
-                            ui.horizontal(|ui| {
-                                let gap = ((COL - 48.0) * 0.5).max(0.0);
-                                ui.add_space(gap);
-                                ui.add(egui::Image::new(logo).fit_to_exact_size(Vec2::splat(48.0)));
-                            });
-                            ui.add_space(4.0);
-                        }
-                        ui.label(
-                            RichText::new("VANGUARDA")
-                                .color(BRASS)
-                                .size(22.0)
-                                .family(fonts::heading_family())
-                                .strong(),
+                        ui.spacing_mut().item_spacing.y = 8.0;
+                        ui.vertical_centered(|ui| {
+                            ui.set_width(COL);
+                            if let Some(logo) = &self.logo_tex {
+                                ui.add(
+                                    egui::Image::new(logo).fit_to_exact_size(Vec2::splat(56.0)),
+                                );
+                                ui.add_space(6.0);
+                            }
+                            ui.label(
+                                RichText::new("VANGUARDA")
+                                    .color(BRASS)
+                                    .size(24.0)
+                                    .family(fonts::heading_family())
+                                    .strong(),
+                            );
+                        });
+                        ui.add_space(6.0);
+                        let y = ui.cursor().top();
+                        ui.painter().hline(
+                            ui.max_rect().x_range(),
+                            y,
+                            egui::Stroke::new(1.0_f32, LINE),
                         );
+                        ui.add_space(14.0);
                         if first {
-                            ui.add_space(4.0);
                             ui.label(
                                 RichText::new("Primeira pessoa")
                                     .color(WHITE)
@@ -2047,7 +2089,7 @@ impl FichaApp {
                                     .color(BRASS)
                                     .size(12.0),
                             );
-                            ui.add_space(8.0);
+                            ui.add_space(4.0);
                             ui.label(RichText::new("Nome").color(WHITE).size(12.0));
                             if self.login_name.trim().is_empty() {
                                 self.login_name = "Gil Salvador".into();
@@ -2068,21 +2110,33 @@ impl FichaApp {
                                 });
                             self.login_dept = d;
                             ui.label(RichText::new("Palavra-passe").color(WHITE).size(12.0));
-                            ui.add(
+                            let pass = ui.add(
                                 egui::TextEdit::singleline(&mut self.login_pass)
                                     .password(true)
-                                    .desired_width(COL),
+                                    .desired_width(COL)
+                                    .hint_text("Palavra-passe"),
                             );
+                            if self.login_need_focus {
+                                pass.request_focus();
+                                self.login_need_focus = false;
+                            }
                             ui.label(RichText::new("Confirmar").color(WHITE).size(12.0));
-                            ui.add(
+                            let pass2 = ui.add(
                                 egui::TextEdit::singleline(&mut self.login_pass2)
                                     .password(true)
-                                    .desired_width(COL),
+                                    .desired_width(COL)
+                                    .hint_text("Confirmar"),
                             );
-                            ui.add_space(10.0);
-                            if gold_button(ui, "Criar", [COL, 34.0]) {
+                            let enter = (pass.has_focus()
+                                || pass.lost_focus()
+                                || pass2.has_focus()
+                                || pass2.lost_focus())
+                                && ui.input(|i| i.key_pressed(egui::Key::Enter));
+                            ui.add_space(8.0);
+                            if gold_button(ui, "Criar", [COL, 36.0]) || enter {
                                 if self.login_pass != self.login_pass2 {
                                     self.login_err = "As palavras-passe não coincidem.".into();
+                                    self.login_need_focus = true;
                                 } else {
                                     let nome = if self.login_name.trim().is_empty() {
                                         "Gil Salvador"
@@ -2105,45 +2159,54 @@ impl FichaApp {
                                             self.login_err.clear();
                                             self.mark_clean();
                                         }
-                                        Err(e) => self.login_err = format!("{e:#}"),
+                                        Err(e) => {
+                                            self.login_err = format!("{e:#}");
+                                            self.login_need_focus = true;
+                                        }
                                     }
                                 }
                             }
                         } else {
-                            ui.add_space(10.0);
                             let users = auth::activo(&self.root_path());
-                            let shop: Vec<_> = users.iter().filter(|u| !u.software).cloned().collect();
-                            let sw: Vec<_> = users.iter().filter(|u| u.software).cloned().collect();
+                            let shop: Vec<_> =
+                                users.iter().filter(|u| !u.software).cloned().collect();
+                            let sw: Vec<_> =
+                                users.iter().filter(|u| u.software).cloned().collect();
                             if shop.len() == 1 && self.login_name.trim().is_empty() {
                                 self.login_name = shop[0].nome.clone();
                             }
                             if shop.len() == 1 && sw.is_empty() {
-                                ui.label(
-                                    RichText::new(&shop[0].nome)
-                                        .color(WHITE)
-                                        .size(16.0)
-                                        .strong(),
-                                );
-                                ui.label(
-                                    RichText::new(shop[0].mesa_label())
-                                        .color(BRASS)
-                                        .size(12.0),
-                                );
+                                ui.vertical_centered(|ui| {
+                                    ui.set_width(COL);
+                                    ui.label(
+                                        RichText::new(&shop[0].nome)
+                                            .color(WHITE)
+                                            .size(16.0)
+                                            .strong(),
+                                    );
+                                    ui.label(
+                                        RichText::new(shop[0].mesa_label())
+                                            .color(BRASS)
+                                            .size(12.0),
+                                    );
+                                });
                                 self.login_name = shop[0].nome.clone();
                             } else if shop.len() == 1 && sw.len() == 1 {
                                 ui.label(RichText::new("Conta").color(WHITE).size(12.0));
+                                let a = shop[0].nome.clone();
+                                let b = sw[0].nome.clone();
+                                let pill = ((COL - 8.0) / 2.0).floor();
                                 ui.horizontal(|ui| {
-                                    let a = &shop[0].nome;
-                                    let b = &sw[0].nome;
-                                    if self.login_name == *a {
-                                        let _ = gold_button(ui, a, [144.0, 28.0]);
-                                    } else if steel_button(ui, a, [144.0, 28.0]) {
+                                    ui.spacing_mut().item_spacing.x = 8.0;
+                                    if self.login_name == a {
+                                        let _ = gold_button(ui, &a, [pill, 30.0]);
+                                    } else if steel_button(ui, &a, [pill, 30.0]) {
                                         self.login_name = a.clone();
                                     }
-                                    if self.login_name == *b {
-                                        let _ = gold_button(ui, "Software", [144.0, 28.0]);
-                                    } else if steel_button(ui, "Software", [144.0, 28.0]) {
-                                        self.login_name = b.clone();
+                                    if self.login_name == b {
+                                        let _ = gold_button(ui, "Software", [pill, 30.0]);
+                                    } else if steel_button(ui, "Software", [pill, 30.0]) {
+                                        self.login_name = b;
                                     }
                                 });
                             } else {
@@ -2154,23 +2217,30 @@ impl FichaApp {
                                     } else {
                                         u.nome.clone()
                                     };
-                                    if ui.selectable_label(self.login_name == u.nome, lab).clicked() {
+                                    if ui
+                                        .selectable_label(self.login_name == u.nome, lab)
+                                        .clicked()
+                                    {
                                         self.login_name = u.nome.clone();
                                     }
                                 }
                             }
-                            ui.add_space(6.0);
+                            ui.add_space(4.0);
                             ui.label(RichText::new("Palavra-passe").color(WHITE).size(12.0));
-                            let enter = ui
-                                .add(
-                                    egui::TextEdit::singleline(&mut self.login_pass)
-                                        .password(true)
-                                        .desired_width(COL),
-                                )
-                                .lost_focus()
+                            let pass = ui.add(
+                                egui::TextEdit::singleline(&mut self.login_pass)
+                                    .password(true)
+                                    .desired_width(COL)
+                                    .hint_text("Palavra-passe"),
+                            );
+                            if self.login_need_focus {
+                                pass.request_focus();
+                                self.login_need_focus = false;
+                            }
+                            let enter = (pass.has_focus() || pass.lost_focus())
                                 && ui.input(|i| i.key_pressed(egui::Key::Enter));
-                            ui.add_space(12.0);
-                            if gold_button(ui, "Entrar", [COL, 34.0]) || enter {
+                            ui.add_space(10.0);
+                            if gold_button(ui, "Entrar", [COL, 36.0]) || enter {
                                 match auth::verify(
                                     &self.root_path(),
                                     &self.login_name,
@@ -2198,18 +2268,18 @@ impl FichaApp {
                                         self.warn_stale_backup();
                                     }
                                     None => {
-                                        self.login_err = "Nome ou palavra-passe incorrectos.".into()
+                                        self.login_err =
+                                            "Nome ou palavra-passe incorrectos.".into();
+                                        self.login_need_focus = true;
                                     }
                                 }
                             }
                         }
                         if !self.login_err.is_empty() {
                             ui.add_space(8.0);
-                            ui.label(RichText::new(&self.login_err).color(RED));
+                            ui.label(RichText::new(&self.login_err).color(RED).size(12.0));
                         }
-                        });
-                        });
-                });
+                    });
             });
     }
 }
@@ -2315,6 +2385,7 @@ impl eframe::App for FichaApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         self.apply_theme(ctx);
         self.ensure_textures(ctx);
+        self.fit_to_screen(ctx);
         let now = ctx.input(|i| i.time);
         if self.t0 == 0.0 {
             self.t0 = now;
@@ -2329,6 +2400,7 @@ impl eframe::App for FichaApp {
             if skip || now - self.t0 > 1.35 {
                 self.show_greeting = false;
                 self.login_t0 = now;
+                self.login_need_focus = true;
             } else {
                 self.paint_greeting(ctx, now - self.t0);
                 ctx.request_repaint();
@@ -2364,10 +2436,10 @@ impl eframe::App for FichaApp {
         egui::CentralPanel::default()
             .frame(
                 egui::Frame::NONE.inner_margin(egui::Margin {
-                    left: 12,
-                    right: 12,
-                    top: 10,
-                    bottom: 10,
+                    left: 8,
+                    right: 8,
+                    top: 8,
+                    bottom: 8,
                 }),
             )
             .show(ctx, |ui| {
@@ -2410,6 +2482,7 @@ impl eframe::App for FichaApp {
                             if steel_button(ui, "Sair", [72.0, 24.0]) {
                                 self.session = None;
                                 self.login_pass.clear();
+                                self.login_need_focus = true;
                             }
                             if !self.is_software() {
                                 if let Some(u) = self.session.clone() {
@@ -2444,7 +2517,9 @@ impl eframe::App for FichaApp {
                     let show_sys = self.can(Mode::Sistema);
                     let prev_mode = self.mode;
                     let tab_hit = ui
-                        .horizontal(|ui| {
+                        .horizontal_wrapped(|ui| {
+                            ui.spacing_mut().item_spacing.x = 4.0;
+                            ui.spacing_mut().button_padding = Vec2::new(8.0, 4.0);
                             let mut hit = false;
                             hit |= shop_tab(ui, &mut self.mode, Mode::Inicio, "Início");
                             if show_cli || show_car {
@@ -5131,9 +5206,10 @@ impl FichaApp {
     fn ui_diag_car_list(&mut self, ui: &mut egui::Ui) {
         ui.horizontal(|ui| {
             ui.label("Filtro:");
+            let w = (ui.available_width() - 8.0).max(160.0);
             ui.add(
                 egui::TextEdit::singleline(&mut self.filter_report)
-                    .desired_width(200.0)
+                    .desired_width(w)
                     .hint_text("matrícula, dono, VIN"),
             );
         });
@@ -5152,16 +5228,18 @@ impl FichaApp {
             .cloned()
             .collect();
         let mut pick_car: Option<Carro> = None;
-        let list_h = (ui.available_height() - 8.0).max(180.0);
+        let list_h = (ui.available_height() - 8.0).max(280.0);
+        ui.set_min_height(list_h);
         egui::ScrollArea::vertical()
             .id_salt("report-car-list")
             .max_height(list_h)
-            .auto_shrink([false, true])
+            .auto_shrink([false, false])
             .show(ui, |ui| {
                 ui.set_width(ui.available_width());
                 if cars.is_empty() {
                     ui.label(RichText::new("Nenhuma viatura — cria-a em Carro.").color(WHITE));
                 }
+                let row_w = ui.available_width();
                 for c in &cars {
                     let on = self.selected_car == c.label();
                     let est = c.estado_oficina.trim();
@@ -5170,7 +5248,7 @@ impl FichaApp {
                     } else {
                         format!("{}{}  ·  {est}", if on { "●  " } else { "·  " }, c.label())
                     };
-                    if board_hit(ui, &line) {
+                    if board_hit_wide(ui, &line, row_w) {
                         pick_car = Some(c.clone());
                     }
                 }
@@ -5221,7 +5299,7 @@ impl FichaApp {
                         ui.add_enabled(
                             edit,
                             egui::TextEdit::singleline(&mut self.scan.dtcs[i].descricao)
-                                .desired_width((avail - 220.0).clamp(140.0, 520.0))
+                                .desired_width((avail - 220.0).max(140.0))
                                 .hint_text("o que está errado"),
                         );
                         ui.add_enabled(
@@ -5248,42 +5326,67 @@ impl FichaApp {
                 self.scan.dtcs.remove(i);
             }
         }
-        if edit && steel_button(ui, "Acrescentar código", [180.0, 26.0]) {
-            self.scan.dtcs.push(Dtc::default());
+        if edit {
+            let w = ui.available_width().max(180.0);
+            if steel_button(ui, "Acrescentar código", [w, 26.0]) {
+                self.scan.dtcs.push(Dtc::default());
+            }
         }
+    }
+
+    fn ui_diag_star_row(&mut self, ui: &mut egui::Ui, i: usize, saude: bool, col_w: f32) {
+        ui.allocate_ui_with_layout(
+            Vec2::new(col_w, 24.0),
+            egui::Layout::left_to_right(egui::Align::Center),
+            |ui| {
+                ui.set_max_width(col_w);
+                let name_w = (col_w - 130.0).clamp(80.0, 240.0);
+                ui.add_sized(
+                    [name_w, 18.0],
+                    egui::Label::new(
+                        RichText::new(&self.car.sistemas[i].categoria)
+                            .color(WHITE)
+                            .size(12.0),
+                    )
+                    .truncate(),
+                );
+                let cur = self.car.sistemas[i].estrelas;
+                for star in (1u8..=5).rev() {
+                    let on = cur >= star;
+                    if star_hit(ui, i, star, on, saude) {
+                        self.car.sistemas[i].estrelas = if cur == star { 0 } else { star };
+                    }
+                }
+            },
+        );
     }
 
     fn ui_diag_stars(&mut self, ui: &mut egui::Ui, saude: bool) {
         section_title(ui, "Saúde (1–5)", !saude);
         self.car.ensure_sistemas();
         let n_sys = self.car.sistemas.len();
-        egui::Grid::new("diag-stars")
-            .num_columns(2)
-            .spacing([16.0, 2.0])
-            .show(ui, |ui| {
-                for i in 0..n_sys {
-                    ui.horizontal(|ui| {
-                        ui.add_sized(
-                            [168.0, 18.0],
-                            egui::Label::new(
-                                RichText::new(&self.car.sistemas[i].categoria)
-                                    .color(WHITE)
-                                    .size(12.0),
-                            ),
-                        );
-                        let cur = self.car.sistemas[i].estrelas;
-                        for star in (1u8..=5).rev() {
-                            let on = cur >= star;
-                            if star_hit(ui, i, star, on, saude) {
-                                self.car.sistemas[i].estrelas = if cur == star { 0 } else { star };
-                            }
-                        }
-                    });
-                    if i % 2 == 1 || i + 1 == n_sys {
-                        ui.end_row();
+        let avail = ui.available_width();
+        let block = 96.0 + 130.0 + 8.0;
+        let two = avail >= block * 2.0 + 12.0;
+        if two {
+            let col_w = ((avail - 12.0) / 2.0).floor().max(block);
+            let mut i = 0;
+            while i < n_sys {
+                ui.horizontal(|ui| {
+                    ui.set_max_width(avail);
+                    self.ui_diag_star_row(ui, i, saude, col_w);
+                    if i + 1 < n_sys {
+                        ui.add_space(12.0);
+                        self.ui_diag_star_row(ui, i + 1, saude, col_w);
                     }
-                }
-            });
+                });
+                i += 2;
+            }
+        } else {
+            for i in 0..n_sys {
+                self.ui_diag_star_row(ui, i, saude, avail);
+            }
+        }
     }
 
     fn ui_diag_history(&mut self, ui: &mut egui::Ui) {
@@ -5315,11 +5418,10 @@ impl FichaApp {
                 .color(WHITE)
                 .size(12.0),
         );
-        ui.horizontal_wrapped(|ui| {
-            if gold_button(ui, "Abrir PDF Autocom…", [220.0, 34.0]) {
-                self.open_autocom_pdf();
-            }
-        });
+        let w = ui.available_width().max(220.0);
+        if gold_button(ui, "Abrir PDF Autocom…", [w, 34.0]) {
+            self.open_autocom_pdf();
+        }
         if !self.scan.source_name.trim().is_empty() {
             ui.label(
                 RichText::new(format!("Lido: {}", self.scan.source_name))
@@ -5405,24 +5507,29 @@ impl FichaApp {
         }
         ui.horizontal(|ui| {
             ui.label("Km:");
+            let w = (ui.available_width() - 8.0).max(80.0);
             ui.add(
                 egui::TextEdit::singleline(&mut self.scan.km)
-                    .desired_width(100.0)
+                    .desired_width(w)
                     .interactive(edit),
             );
         });
         ui.horizontal(|ui| {
             ui.label("Data:");
+            let w = (ui.available_width() - 8.0).max(80.0);
             ui.add(
                 egui::TextEdit::singleline(&mut self.scan.data)
-                    .desired_width(100.0)
+                    .desired_width(w)
                     .interactive(edit),
             );
         });
-        if edit && steel_button(ui, "Trocar viatura", [140.0, 26.0]) {
-            self.car = Carro::default();
-            self.selected_car.clear();
-            self.set_status(true, "Escolhe outra viatura. O Autocom fica.");
+        if edit {
+            let w = ui.available_width().max(140.0);
+            if steel_button(ui, "Trocar viatura", [w, 26.0]) {
+                self.car = Carro::default();
+                self.selected_car.clear();
+                self.set_status(true, "Escolhe outra viatura. O Autocom fica.");
+            }
         }
         ui.add_space(8.0);
         self.ui_diag_history(ui);
@@ -5436,10 +5543,11 @@ impl FichaApp {
         self.ui_diag_codes(ui, edit);
         ui.add_space(8.0);
         section_title(ui, "Carta", !edit);
+        let carta_w = ui.available_width().max(160.0);
         ui.add_enabled(
             edit,
             egui::TextEdit::multiline(&mut self.scan.sumario)
-                .desired_width(ui.available_width())
+                .desired_width(carta_w)
                 .desired_rows(8)
                 .hint_text("O que viste, o que aconselhas, próximo passo…"),
         );
@@ -5450,15 +5558,26 @@ impl FichaApp {
     }
 
     fn ui_diag_visit(&mut self, ui: &mut egui::Ui, edit: bool, saude: bool) {
-        let wide = ui.available_width() >= 820.0;
+        let avail = ui.available_width();
+        let wide = avail >= 820.0;
         if wide {
-            let avail = ui.available_width();
-            let left = (avail * 0.34).max(240.0);
-            ui.columns(2, |cols| {
-                cols[0].set_width(left);
-                cols[1].set_width((avail - left - 12.0).max(320.0));
-                self.ui_diag_identity(&mut cols[0], edit);
-                self.ui_diag_work(&mut cols[1], edit, saude);
+            let gap = 16.0_f32;
+            let left = (avail * 0.32).max(240.0);
+            let right = (avail - left - gap).max(320.0);
+            ui.horizontal(|ui| {
+                ui.vertical(|ui| {
+                    ui.set_min_width(left);
+                    ui.set_max_width(left);
+                    ui.set_width(left);
+                    self.ui_diag_identity(ui, edit);
+                });
+                ui.add_space(gap);
+                ui.vertical(|ui| {
+                    ui.set_min_width(right);
+                    ui.set_max_width(right);
+                    ui.set_width(right);
+                    self.ui_diag_work(ui, edit, saude);
+                });
             });
         } else {
             self.ui_diag_identity(ui, edit);
@@ -6143,6 +6262,10 @@ fn steel_button(ui: &mut egui::Ui, label: &str, size: [f32; 2]) -> bool {
 }
 
 fn board_hit(ui: &mut egui::Ui, line: &str) -> bool {
+    board_hit_wide(ui, line, 0.0)
+}
+
+fn board_hit_wide(ui: &mut egui::Ui, line: &str, width: f32) -> bool {
     let id = ui.id().with(("board", line));
     let now = ui.ctx().input(|i| i.time);
     let t0 = ui.ctx().data(|d| d.get_temp::<f64>(id)).unwrap_or(0.0);
@@ -6154,12 +6277,15 @@ fn board_hit(ui: &mut egui::Ui, line: &str) -> bool {
     } else {
         egui::Stroke::new(0.0_f32, GOLD)
     };
-    let r = ui.add(
-        egui::Button::new(RichText::new(line).color(WHITE).size(13.0))
-            .fill(Color32::TRANSPARENT)
-            .stroke(stroke)
-            .corner_radius(3.0),
-    );
+    let btn = egui::Button::new(RichText::new(line).color(WHITE).size(13.0))
+        .fill(Color32::TRANSPARENT)
+        .stroke(stroke)
+        .corner_radius(3.0);
+    let r = if width > 8.0 {
+        ui.add_sized([width, 28.0], btn)
+    } else {
+        ui.add(btn)
+    };
     ui.ctx()
         .data_mut(|d| d.insert_temp(hov_id, r.hovered()));
     if r.hovered() {
@@ -6180,13 +6306,14 @@ fn star_hit(ui: &mut egui::Ui, row: usize, star: u8, on: bool, enabled: bool) ->
     let now = ui.ctx().input(|i| i.time);
     let t0 = ui.ctx().data(|d| d.get_temp::<f64>(id)).unwrap_or(0.0);
     let pop = ((0.12 - (now - t0)).max(0.0) / 0.12) as f32;
-    let size = 16.0 + 5.0 * pop;
+    let size = 16.0 + 3.0 * pop;
     let mark = if on { "★" } else { "☆" };
     let resp = ui.add_enabled(
         enabled,
         egui::Button::new(RichText::new(mark).color(GOLD).size(size))
             .fill(DARK)
-            .stroke(egui::Stroke::new(0.0_f32, GOLD)),
+            .stroke(egui::Stroke::new(0.0_f32, GOLD))
+            .min_size(Vec2::new(22.0, 22.0)),
     );
     let clicked = resp.clicked();
     if clicked {

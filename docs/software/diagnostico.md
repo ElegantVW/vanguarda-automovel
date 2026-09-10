@@ -21,7 +21,7 @@ FORScan grátis / FORScan Lite podem ficar no banco como ferramenta de terceiros
 
 ## Na app
 
-Relatório é a visita: **Novo** → escolhe o carro → Autocom (botão ouro ou larga o PDF) → códigos agrupados por sistema → carta → 1–5★ → **Gravar** / **Exportar**. Depois de gravar, **Fazer orçamento** (Escritório/Design). Qualquer mesa da loja (não a conta do software).
+Relatório é a visita: **Novo** → lista de carros a preencher a janela → Autocom (botão ouro ou larga o PDF) → códigos agrupados por sistema → carta → 1–5★ → **Gravar** / **Exportar**. O PDF do cliente: Cinzel nos títulos, Rajdhani no corpo (português com ç ã õ), estrelas desenhadas, ícones sem placa preta, sem bloco Notas. Depois de gravar, **Fazer orçamento** (Escritório/Design). Qualquer mesa da loja (não a conta do software).
 
 «Ler vLinker» e «Simular» ficam em **Outras origens**. Sem dongle, Simular usa o mock (Academia 06) e não toca no carro. Arrastar um `.txt` FORScan preenche o mesmo `Scan`.
 
